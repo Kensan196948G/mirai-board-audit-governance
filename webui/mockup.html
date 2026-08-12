@@ -163,7 +163,7 @@
         { id: "admin", name: "システム管理者（林知佳）", role: "admin" },
       ];
       const ROLE_PERMISSIONS = [
-        "dashboard:view", "agenda:manage", "finding:manage", "meeting:view", "auditlog:view", "ai:use", "settings:manage", "import:use"
+        "dashboard:view", "agenda:manage", "agenda:delete", "finding:manage", "finding:delete", "meeting:view", "auditlog:view", "ai:use", "settings:manage", "import:use"
       ];
       function seedState() {
         const users = [
@@ -183,16 +183,22 @@
         ];
         const roles = [
           { id: "r1", name: "取締役", permissions: ["dashboard:view", "agenda:manage", "meeting:view", "ai:use"] },
-          { id: "r2", name: "事務局", permissions: ["dashboard:view", "agenda:manage", "import:use", "meeting:view"] },
-          { id: "r3", name: "内部監査", permissions: ["dashboard:view", "finding:manage", "import:use", "ai:use"] },
+          { id: "r2", name: "事務局", permissions: ["dashboard:view", "agenda:manage", "agenda:delete", "import:use", "meeting:view"] },
+          { id: "r3", name: "内部監査", permissions: ["dashboard:view", "finding:manage", "finding:delete", "import:use", "ai:use"] },
           { id: "r4", name: "監査役", permissions: ["dashboard:view", "meeting:view", "auditlog:view"] },
-          { id: "r5", name: "システム管理者", permissions: ["dashboard:view", "settings:manage", "auditlog:view", "ai:use", "import:use"] },
+          { id: "r5", name: "システム管理者", permissions: ["dashboard:view", "settings:manage", "auditlog:view", "ai:use", "import:use", "agenda:delete", "finding:delete"] },
         ];
         const agendas = [
           { id: "ag1", title: "子会社みらいエナジー株式会社 株式譲渡契約の締結", type: "重要案件", classification: "秘", owner: "田中洋一", due: "2026-08-18", status: "決議確定", urgent: true, summary: "連結子会社の全株式をソラリス電力株式会社へ譲渡する契約の承認", sources: "株式譲渡契約書ドラフトv3（第4条 表明保証）／デューデリジェンス報告書要約（第5章 法務）" },
           { id: "ag2", title: "中期経営計画2027年度方針の承認", type: "経営方針", classification: "秘", owner: "田中洋一", due: "2026-08-18", status: "審議中", urgent: false, summary: "2027〜2029年度の中期経営計画方針", sources: "中期経営計画方針骨子v2（1. 基本方針／3. 経営指標）" },
           { id: "ag3", title: "内部統制報告制度の運用方針改定", type: "規程改定", classification: "内部", owner: "木村佳代", due: "2026-08-25", status: "提出済み", urgent: false, summary: "財務報告に係る内部統制の評価手続", sources: "" },
           { id: "ag4", title: "連結子会社への債務保証枠設定", type: "資金調達", classification: "秘", owner: "木村佳代", due: "2026-07-21", status: "決議確定", urgent: false, summary: "上限100億円の債務保証枠", sources: "債務保証枠設定稟議書（全頁）" },
+          { id: "ag5", title: "2026年度内部監査計画の承認", type: "監査計画", classification: "内部", owner: "佐々木誠", due: "2026-08-25", status: "提出済み", urgent: false, summary: "内部監査室の2026年度計画について監査役会の同意を求める", sources: "2026年度内部監査計画書（1. 監査対象／3. リソース計画）" },
+          { id: "ag6", title: "情報セキュリティ基本方針の改定", type: "規程改定", classification: "秘", owner: "林知佳", due: "2026-09-01", status: "下書き", urgent: false, summary: "外部委託先管理と特権ID管理を追加する改定", sources: "情報セキュリティ基本方針 改定案v2（第5章 外部委託／第7章 特権ID）" },
+          { id: "ag7", title: "役員報酬制度の見直し方針", type: "人事", classification: "極秘", owner: "田中洋一", due: "2026-09-15", status: "審議中", urgent: false, summary: "中長期業績連動報酬の比率引き上げを検討", sources: "役員報酬制度 見直し方針案（3. 報酬構成）" },
+          { id: "ag8", title: "再生可能エネルギー事業への参入検討開始", type: "重要案件", classification: "秘", owner: "田中洋一", due: "2026-08-28", status: "提出済み", urgent: true, summary: "洋上風力事業への参入可能性調査の開始を承認する", sources: "参入検討 事前調査報告書（2. 市場性／4. リスク）" },
+          { id: "ag9", title: "内部統制システムの整備状況報告", type: "経営方針", classification: "内部", owner: "木村佳代", due: "2026-08-22", status: "決議確定", urgent: false, summary: "金融商品取引法対応を含む内部統制の整備状況を報告", sources: "内部統制整備状況報告書（1. 評価結果）" },
+          { id: "ag10", title: "定款一部変更（監査役会設置会社化）の検討", type: "人事", classification: "極秘", owner: "松本修", due: "2026-09-30", status: "取下げ", urgent: false, summary: "監査役会設置会社への移行は取下げ（再検討）", sources: "" },
         ];
         const meetings = [
           { id: "m1", title: "2026年8月 取締役会（第12回）", heldAt: "2026-08-18 10:00", status: "開催中" },
@@ -251,6 +257,16 @@
         save();
       }
       function currentPersona() { return PERSONAS.find((p) => p.id === persona) || PERSONAS[0]; }
+      function currentRolePerms() {
+        const roleName = { director: "取締役", secretariat: "事務局", internal_auditor: "内部監査", kansa_yaku: "監査役", admin: "システム管理者" }[currentPersona().role];
+        const r = S.roles.find((x) => x.name === roleName);
+        return r ? r.permissions : [];
+      }
+      function hasPerm(p) { return currentRolePerms().includes(p); }
+      function confirmTwice(message) {
+        if (!confirm(`${message}\n（1回目）本当に削除しますか？`)) return false;
+        return confirm(`${message}\n（2回目・最終確認）この操作は取り消せません。削除しますか？`);
+      }
       function uid(prefix) { return prefix + "_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
       function esc(s) { return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]); }
       function toast(msg, type) {
@@ -498,7 +514,7 @@
           <td><div class="row-actions">
             <select aria-label="状態変更" data-status data-id="${a.id}">${["下書き","提出済み","審議中","決議確定","取下げ"].map((s) => `<option ${s === a.status ? "selected" : ""}>${s}</option>`).join("")}</select>
             <button type="button" class="btn ghost" data-detail data-id="${a.id}">詳細</button>
-            <button type="button" class="btn ghost" data-del data-id="${a.id}">削除</button>
+            ${hasPerm("agenda:delete") ? `<button type="button" class="btn ghost" data-del data-id="${a.id}">削除</button>` : `<span class="muted-small">（削除権限なし）</span>`}
           </div></td></tr>`).join("");
         return `<section class="panel">
           <h2>会議・議案（新規登録／CSV・Excelインポート対応）</h2>
@@ -511,6 +527,7 @@
           </div>
           <div style="overflow-x:auto"><table><thead><tr><th>件名</th><th>種別</th><th>機密</th><th>担当</th><th>期限</th><th>状態</th><th>操作</th></tr></thead><tbody>${rows}</tbody></table></div>
           <p class="muted-small">新規登録・インポートした項目はこのモックアップ内（localStorage）に保存され、ダッシュボードのKPIへ即時反映されます。</p>
+          <p class="muted-small">削除は削除権限（事務局・システム管理者）を持つロールのみ実行でき、確認ダイアログが2回表示されます。</p>
         </section>`;
       }
       function bindAgenda() {
@@ -521,7 +538,7 @@
         document.getElementById("agendaFilter").addEventListener("change", filterAgenda);
         document.querySelectorAll("[data-status]").forEach((s) => s.addEventListener("change", (e) => { const a = S.agendas.find((x) => x.id === e.target.dataset.id); if (a) { a.status = e.target.value; log("agenda.status", a.id, "ok"); save(); render(); toast("状態を更新しました", "ok"); } }));
         document.querySelectorAll("[data-detail]").forEach((b) => b.addEventListener("click", async () => { const a = S.agendas.find((x) => x.id === b.dataset.id); if (a) await showAgendaDetail(a); }));
-        document.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => { const a = S.agendas.find((x) => x.id === b.dataset.id); if (a && confirm(`議案「${a.title}」を削除しますか？`)) { S.agendas = S.agendas.filter((x) => x.id !== a.id); log("agenda.delete", a.id, "ok"); save(); render(); toast("削除しました", "ok"); } }));
+        document.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => { const a = S.agendas.find((x) => x.id === b.dataset.id); if (a && confirmTwice(`議案「${a.title}」を削除しますか？`)) { S.agendas = S.agendas.filter((x) => x.id !== a.id); log("agenda.delete", a.id, "ok"); save(); render(); toast("削除しました", "ok"); } }));
       }
       function filterAgenda() {
         const q = document.getElementById("agendaSearch").value.toLowerCase();
@@ -581,7 +598,7 @@
           <td><div class="row-actions">
             <select aria-label="状態変更" data-status data-id="${f.id}">${["案","確定","回答待ち","是正中","終結","再オープン"].map((s) => `<option ${s === f.status ? "selected" : ""}>${s}</option>`).join("")}</select>
             <button type="button" class="btn ghost" data-detail data-id="${f.id}">詳細</button>
-            <button type="button" class="btn ghost" data-del data-id="${f.id}">削除</button>
+            ${hasPerm("finding:delete") ? `<button type="button" class="btn ghost" data-del data-id="${f.id}">削除</button>` : `<span class="muted-small">（削除権限なし）</span>`}
           </div></td></tr>`).join("");
         return `<section class="panel">
           <h2>指摘・是正（新規登録／CSV・Excelインポート対応）</h2>
@@ -591,6 +608,7 @@
             <button type="button" class="btn ghost" data-import-xlsx="finding">エクセルインポート</button>
           </div>
           <div style="overflow-x:auto"><table><thead><tr><th>指摘</th><th>重要度</th><th>監査</th><th>事実</th><th>状態</th><th>操作</th></tr></thead><tbody>${rows}</tbody></table></div>
+          <p class="muted-small">削除は削除権限（内部監査・システム管理者）を持つロールのみ実行でき、確認ダイアログが2回表示されます。</p>
         </section>`;
       }
       function bindFinding() {
@@ -599,7 +617,7 @@
         document.querySelectorAll("[data-import-xlsx]").forEach((b) => b.addEventListener("click", () => handleImport("finding")));
         document.querySelectorAll("[data-status]").forEach((s) => s.addEventListener("change", (e) => { const f = S.findings.find((x) => x.id === e.target.dataset.id); if (f) { f.status = e.target.value; log("finding.status", f.id, "ok"); save(); render(); toast("状態を更新しました", "ok"); } }));
         document.querySelectorAll("[data-detail]").forEach((b) => b.addEventListener("click", async () => { const f = S.findings.find((x) => x.id === b.dataset.id); if (f) await openModal(`指摘詳細: ${esc(f.title)}`, `<p class="muted-small">重要度: ${esc(f.severity)} ／ 監査: ${esc(f.engagement)} ／ 状態: ${esc(f.status)}</p><p><strong>事実:</strong><br>${esc(f.fact || "—")}</p><p><strong>勧告:</strong><br>${esc(f.recommendation || "—")}</p>`, { okLabel: "閉じる" }); }));
-        document.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => { const f = S.findings.find((x) => x.id === b.dataset.id); if (f && confirm(`指摘「${f.title}」を削除しますか？`)) { S.findings = S.findings.filter((x) => x.id !== f.id); log("finding.delete", f.id, "ok"); save(); render(); toast("削除しました", "ok"); } }));
+        document.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => { const f = S.findings.find((x) => x.id === b.dataset.id); if (f && confirmTwice(`指摘「${f.title}」を削除しますか？`)) { S.findings = S.findings.filter((x) => x.id !== f.id); log("finding.delete", f.id, "ok"); save(); render(); toast("削除しました", "ok"); } }));
       }
       async function newFinding() {
         const ok = await openModal("指摘 新規登録", `<fieldset class="form-section">
@@ -680,7 +698,11 @@
                 <h3>詳細コンテンツ</h3>
                 <div id="aiResult">${selected ? renderDraftDetail(selected) : '<p class="muted-small">左の草案一覧から選択するか、「草案を生成」してください。</p>'}</div>
               </div>
-              <div id="aiSettingsMount"></div>
+              <div class="detail-panel">
+                <h3>AI設定</h3>
+                <p class="muted-small">AI設定（利用モデル・APIキー・ガバナンス）は「システム設定」→「AI設定」タブで変更します。${hasPerm("settings:manage") ? "" : "（変更できるのはシステム管理者のみです）"}</p>
+                ${hasPerm("settings:manage") ? `<div class="btn-row"><button type="button" class="btn ghost" id="aiGoSettings">システム設定のAI設定を開く</button></div>` : ""}
+              </div>
             </div>
           </div>
         </section>`;
@@ -691,7 +713,8 @@
         document.querySelectorAll("[data-select]").forEach((b) => b.addEventListener("click", () => { selectedDraftId = b.dataset.select; render(); }));
         document.querySelectorAll("[data-save]").forEach((b) => b.addEventListener("click", () => { const d = S.aiDrafts.find((x) => x.id === b.dataset.save); if (d && d.status === "レビュー済み") { d.status = "保存済み"; log("ai.draft.save", d.id, "ok"); save(); render(); toast("保存しました（正式記録にはなりません）", "ok"); } }));
         document.querySelectorAll("[data-share]").forEach((b) => b.addEventListener("click", () => { const d = S.aiDrafts.find((x) => x.id === b.dataset.share); if (d && d.status === "保存済み") { d.status = "共有済み"; log("ai.draft.share", d.id, "ok"); save(); render(); toast("共有しました（デモ）", "ok"); } }));
-        renderAISettingsPanel(document.getElementById("aiSettingsMount"));
+        const goSettings = document.getElementById("aiGoSettings");
+        if (goSettings) goSettings.addEventListener("click", () => setView("settings"));
       }
       let pendingApiKey = "";
       function maskKeyInput(e) {
