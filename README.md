@@ -51,8 +51,9 @@ npm run build
 
 提示されたHTMLファイル（企画書・要件定義書・詳細仕様設計書・モックアップPart4）を、元の内容のまま配信するWebUIを用意しています。systemdサービスとして常時起動しています。
 
-- URL: http://192.168.0.185:8090/
-- 実体: [webui/index.html](./webui/index.html)（ランチャー）＋ [scripts/webui-server.mjs](./scripts/webui-server.mjs)（Node製HTTPサーバー）
+- URL: http://192.168.0.185:8090/（ルートはモックアップPart4を表示）
+- 一覧（4文書のランチャー）: http://192.168.0.185:8090/index.html
+- 実体: [webui/mockup.html](./webui/mockup.html)（ビューア）＋ [webui/index.html](./webui/index.html)（ランチャー）＋ [scripts/webui-server.mjs](./scripts/webui-server.mjs)（Node製HTTPサーバー）
 - systemdユニット: [deploy/mirai-board-webui.service](./deploy/mirai-board-webui.service)（`sudo systemctl status mirai-board-webui` で確認）
 
 手動起動する場合:
