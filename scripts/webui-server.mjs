@@ -42,10 +42,9 @@ const server = createServer(async (req, res) => {
 
   let candidates = [];
   if (pathname === "/") {
-    // ルート表示はモックアップ（拡張デモ）
-    candidates = [join(WEBUI_DIR, "mockup.html")];
+    // ルートは説明・一覧ページ（index.html と同じ内容）
+    candidates = [join(WEBUI_DIR, "index.html")];
   } else if (pathname === "/index.html") {
-    // 説明文付きランディングページ
     candidates = [join(WEBUI_DIR, "index.html")];
   } else if (pathname === "/mockup.html") {
     candidates = [join(WEBUI_DIR, "mockup.html")];

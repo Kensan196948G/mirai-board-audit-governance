@@ -19,8 +19,7 @@ for (const f of docs) {
   cpSync(join(ROOT, f), join(OUT, f));
 }
 
-// ルート表示はモックアップビューア（/mockup.html）にリライト
-writeFileSync(join(OUT, "_redirects"), "/ /mockup.html 200\n");
+// ルートは index.html（説明・一覧ページ）を assets が直接配信するため、_redirects は不要
 
 // セキュリティヘッダー（Pages）
 writeFileSync(
