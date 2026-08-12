@@ -1,0 +1,104 @@
+import { Hono } from "hono";
+import { writeAuditEvent } from "../audit.ts";
+import { authMiddleware, requirePerm, type AppVars } from "../middleware.ts";
+
+const FR_MAP = [
+  ["FR-01", "議案の作成・提出・差戻し・取下げ・再上程", "agenda_items / POST /api/agenda-items / submit / return / withdraw / resubmit", "implemented", "tests/integration/agenda.test.ts"],
+  ["FR-02", "招集・出欠イベント", "convocations / attendance-events", "implemented", "tests/integration/meetings.test.ts"],
+  ["FR-03", "利益相反の申告・判定・操作別制御", "conflicts / determinations / eligibility", "implemented", "tests/integration/agenda.test.ts"],
+  ["FR-04", "審議資料パッケージと結論Evidence Manifest", "deliberation-packages / evidence_manifests", "implemented", "tests/integration/manifest.test.ts"],
+  ["FR-05", "正式議決と定足数", "votes / decisions / eligibility_snapshots", "implemented", "tests/integration/decision.test.ts"],
+  ["FR-06", "議事録版・二重記名拒否・再記名", "minutes versions / signoffs", "implemented", "tests/integration/minutes.test.ts"],
+  ["FR-07", "決議から履行タスク", "decisions/:id/actions / action_events", "implemented", "tests/integration/decision.test.ts"],
+  ["FR-08", "監査ユニバース・リスク評価・年度計画・個別監査", "audit-universes / risk-assessments / annual-plans / engagements", "implemented", "tests/integration/audit.test.ts"],
+  ["FR-09", "手続・調書・レビュー（作成者≠レビュー者）", "procedures / workpapers / reviews", "implemented", "tests/integration/audit.test.ts"],
+  ["FR-10", "指摘・経営回答・残余リスク・是正・再検証・再オープン", "findings / management-responses / risk-acceptances / remediations / retests", "implemented", "tests/integration/audit.test.ts"],
+  ["FR-11", "通知・受領・再通知", "notifications / acknowledge / retry", "implemented", "tests/integration/notifications.test.ts"],
+  ["FR-12", "検索・ダッシュボード・CSV・証拠パッケージ", "search / dashboard / exports / evidence-packages", "implemented", "tests/integration/search.test.ts"],
+  ["FR-13", "保持・法的保全・廃棄制御", "retention-rules / legal-holds / disposals", "implemented", "tests/integration/retention.test.ts"],
+  ["FR-14", "役割・職務分離競合", "permissions / admin/sod-conflicts", "implemented", "tests/integration/auth.test.ts"],
+  ["FR-15", "AI草案（出典必須・人レビュー）", "ai/drafts（規則ベースデモ）", "implemented", "tests/integration/ai.test.ts"],
+];
+
+const AC_MAP = [
+  ["AC-01", "代表シナリオの開始〜終端", "implemented", "tests/integration/*"],
+  ["AC-02", "認可・存在非露出・水平権限", "implemented", "tests/integration/auth.test.ts"],
+  ["AC-03", "Manifest固定・再現", "implemented", "tests/integration/manifest.test.ts"],
+  ["AC-04", "復旧・連携断（PoC予定）", "backlog", "B-08"],
+  ["AC-05", "AI出典・保存禁止", "implemented", "tests/integration/ai.test.ts"],
+  ["AC-06", "監査ログ・エクスポート記録", "implemented", "tests/integration/audit-log.test.ts"],
+  ["AC-07", "職務分離・二重記名", "implemented", "tests/integration/audit.test.ts"],
+  ["AC-08", "法的保全〜廃棄", "implemented", "tests/integration/retention.test.ts"],
+  ["AC-09", "資格・定足数・集計", "implemented", "tests/integration/decision.test.ts"],
+];
+
+const NFR_MAP = [
+  ["NFR-01", "可用性・復旧（RTO/RPO）", "backlog", "本番運用フェーズ（B-08）"],
+  ["NFR-02", "性能（p95 2秒/検索3秒）", "backlog", "負荷試験（B-06）"],
+  ["NFR-03", "セキュリティ試験", "backlog", "SAST/DAST（B-07）"],
+  ["NFR-04", "アクセシビリティ・レスポンシブ", "implemented", "web/src（セマンティックHTML・キーボード・320px）"],
+  ["NFR-05", "監視・ログ・トレース", "partial", "observability有効／アラートはB-08"],
+  ["NFR-06", "Manifest再現・署名・欠番検証", "implemented", "verify-chain / manifests/:id/verify"],
+];
+
+export function adminRoutes() {
+  const app = new Hono<{ Variables: AppVars }>();
+  app.use("/users", authMiddleware);
+  app.use("/admin/*", authMiddleware);
+
+  app.get("/users", requirePerm("agenda:view"), async (c) => {
+    const deps = c.get("deps");
+    const items = await deps.db.all<Record<string, unknown>>(
+      "SELECT id, name, email, role, title, department, outside, body_ids, active FROM users WHERE active = 1 ORDER BY role, name",
+    );
+    return c.json({ items, total: items.length });
+  });
+
+  app.get("/admin/sod-conflicts", requirePerm("admin:sod"), async (c) => {
+    const deps = c.get("deps");
+    const workpapers = await deps.db.all<Record<string, unknown>>(
+      "SELECT w.id, w.title, w.author_id, w.reviewer_id, au.name AS author_name, rv.name AS reviewer_name FROM workpapers w LEFT JOIN users au ON au.id = w.author_id LEFT JOIN users rv ON rv.id = w.reviewer_id",
+    );
+    const findings = await deps.db.all<Record<string, unknown>>(
+      "SELECT f.id, f.title, f.created_by, u.name AS created_by_name FROM findings f LEFT JOIN users u ON u.id = f.created_by",
+    );
+    const conflicts = [
+      ...workpapers.filter((w) => w.reviewer_id && w.author_id === w.reviewer_id).map((w) => ({
+        type: "workpaper_self_review",
+        resource: String(w.id),
+        detail: `調書「${String(w.title)}」の作成者とレビュー者が同一`,
+      })),
+      ...findings.map((f) => ({
+        type: "finding_author_check",
+        resource: String(f.id),
+        detail: `指摘「${String(f.title)}」作成者: ${String(f.created_by_name)}（確定・再検証時の分離要確認）`,
+      })),
+    ];
+    return c.json({ items: conflicts, total: conflicts.length });
+  });
+
+  app.get("/admin/requirements", requirePerm("admin:requirements"), async (c) => {
+    return c.json({
+      fr: FR_MAP.map(([id, name, api, status, test]) => ({ id, name, api, status, test })),
+      ac: AC_MAP.map(([id, name, status, test]) => ({ id, name, status, test })),
+      nfr: NFR_MAP.map(([id, name, status, note]) => ({ id, name, status, note })),
+      asOf: new Date().toISOString(),
+    });
+  });
+
+  app.get("/admin/audit-log-access", requirePerm("admin:audit-access"), async (c) => {
+    const deps = c.get("deps");
+    const users = await deps.db.all<Record<string, unknown>>(
+      "SELECT id, name, role, title FROM users WHERE active = 1 AND role IN ('admin','kansa_yaku','internal_audit_manager','records','audit_log_viewer') ORDER BY role",
+    );
+    return c.json({ items: users, total: users.length });
+  });
+
+  app.post("/admin/log-demo-access", requirePerm("admin:audit-access"), async (c) => {
+    const user = c.get("user");
+    await writeAuditEvent(c.get("deps").db, { actorId: user.id, action: "admin.audit_access.view", resourceType: "admin", resourceId: "audit-log-access", correlationId: c.get("correlationId") });
+    return c.json({ ok: true });
+  });
+
+  return app;
+}

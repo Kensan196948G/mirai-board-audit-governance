@@ -3,12 +3,14 @@ import { join, extname } from "node:path";
 import { serve } from "@hono/node-server";
 import { buildApp } from "../src/app.ts";
 import { SqliteDb } from "../src/db/sqlite.ts";
+import { applyMigrations } from "../src/migrate.ts";
 
 const cwd = process.cwd();
 const vars = existsSync(join(cwd, ".dev.vars")) ? readFileSync(join(cwd, ".dev.vars"), "utf8") : "";
 const getVar = (key: string, fallback = "") => vars.match(new RegExp(`^${key}=(.+)$`, "m"))?.[1] ?? fallback;
 
 const db = new SqliteDb(join(cwd, ".wrangler/dev.sqlite"));
+await applyMigrations(db, join(cwd, "migrations"));
 const app = buildApp({
   db,
   sessionSecret: getVar("SESSION_SECRET", "local-dev-secret"),
