@@ -43,6 +43,8 @@ const server = createServer(async (req, res) => {
   let filePath;
   if (pathname === "/" || pathname === "/index.html") {
     filePath = join(WEBUI_DIR, "index.html");
+  } else if (pathname === "/mockup.html") {
+    filePath = join(WEBUI_DIR, "mockup.html");
   } else {
     filePath = safeResolve(ROOT, pathname.replace(/^\/+/, ""));
   }
