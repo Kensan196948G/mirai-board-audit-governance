@@ -21,10 +21,10 @@
 |---|---|---|
 | 0. Monitor | 文書・モックアップ・環境・接続先精査 | ✅ 完了 |
 | 1. Assessment | 評価・ギャップ分析 → `docs/assessment.md` | ✅ 完了 |
-| 2. Scaffold | リポジトリ初期化・package.json・wrangler設定・CI骨格・API契約 | 🔄 進行中 |
-| 3. Backend | スキーマ/migration/seed、認証認可、会議・議案・決議・Manifest・監査フロー、監査ログチェーン、通知・検索・KPI・CSV、保持・法的保全、AI草案ガード、テスト | 未着手 |
-| 4. Frontend | 画面一式（ログイン/ダッシュボード/マイタスク/会議/議案/決議/議事録/監査/調書/指摘/証拠/ログ/管理/要件対応）、レスポンシブ・a11y | 未着手 |
-| 5. Verify | lint / typecheck / test / build / e2eスモーク / previewデプロイ | 未着手 |
+| 2. Scaffold | リポジトリ初期化・package.json・wrangler設定・CI骨格・API契約 | ✅ 完了 |
+| 3. Backend | スキーマ/migration/seed、認証認可、会議・議案・決議・Manifest・監査フロー、監査ログチェーン、通知・検索・KPI・CSV、保持・法的保全、AI草案ガード、テスト | ✅ 完了 |
+| 4. Frontend | 画面一式（ログイン/ダッシュボード/マイタスク/会議/議案/決議/議事録/監査/調書/指摘/証拠/ログ/管理/要件対応）、レスポンシブ・a11y | ✅ 完了 |
+| 5. Verify | lint / typecheck / test / build / e2eスモーク / previewデプロイ | 🔄 進行中 |
 | 6. Review | 主任レビュー・不整合修正・セキュリティ確認 | 未着手 |
 | 7. Git/Release | commit → push → PR → CI成功 → auto-merge | 未着手 |
 | 8. Re-assessment | 完了条件チェック・残課題をバックログ化・最終報告 | 未着手 |
@@ -61,3 +61,4 @@
 ## 7. 進捗記録
 
 - 2026-08-12: Phase 0/1 完了。スキャフォールド作成中。
+- 2026-08-12: Phase 2/3/4 完了（バックエンド全API・seed・テスト21件、フロント全画面・ビルド成功）。Phase 5 進行中。

@@ -32,4 +32,4 @@ npm run seed
 
 ## 4. Preview 確認
 
-デプロイ後: `<worker>.workers.dev` を参照。デモアカウントはログイン画面の一覧から選択。
+デプロイ後: `https://mirai-board-audit-governance-preview.<アカウントサブドメイン>.workers.dev` を参照。デモアカウントはログイン画面の一覧から選択（すべて架空）。
