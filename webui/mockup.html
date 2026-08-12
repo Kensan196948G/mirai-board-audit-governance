@@ -74,6 +74,34 @@
       .field input:focus, .field select:focus, .field textarea:focus {
         border-color: var(--accent); box-shadow: 0 0 0 3px rgba(224,138,43,0.18); outline: none;
       }
+      .field input, .field select, .field textarea {
+        border-radius: 10px;
+        padding: 0.62rem 0.8rem;
+        border: 1px solid #d9e0e8;
+        background: #fff;
+        color: #1a2433;
+        font-size: 0.9rem;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+        width: 100%;
+      }
+      .field select { appearance: none; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23667085' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.8rem center; padding-right: 2.2rem; cursor: pointer; }
+      .field input:hover, .field select:hover, .field textarea:hover { border-color: #b9c2cd; }
+      .field input::placeholder, .field textarea::placeholder { color: #9aa4b2; }
+      .field > span { font-weight: 600; color: #4a5465; margin-bottom: 0.2rem; }
+      .ai-layout { display: grid; grid-template-columns: 360px 1fr; gap: 1rem; align-items: start; }
+      .ai-left, .ai-right { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+      .detail-panel { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; }
+      .detail-panel h3 { margin: 0 0 0.6rem; font-size: 0.95rem; }
+      .draft-item {
+        display: block; width: 100%; text-align: left; border: 1px solid var(--border); border-radius: 10px;
+        background: #fff; padding: 0.65rem 0.8rem; cursor: pointer; margin-bottom: 0.5rem;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      }
+      .draft-item:hover { border-color: var(--accent); background: #fdf8f1; }
+      .draft-item.selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(224,138,43,0.22); background: #fdf8f1; }
+      .draft-item .t { font-weight: 700; font-size: 0.84rem; }
+      .draft-item .m { font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; }
+      .ai-settings-panel { background: #fbfcfd; border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; }
       .key-mask { font-family: "Courier New", monospace; letter-spacing: 0.12em; }
       .btn-row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.8rem; }
       .hint { font-size: 0.72rem; color: var(--muted); margin-top: 0.3rem; }
@@ -84,6 +112,7 @@
         .side nav { flex-direction: row; flex-wrap: wrap; }
         .side-foot { display: none; }
         .modal .form-grid { grid-template-columns: 1fr; }
+        .ai-layout { grid-template-columns: 1fr; }
       }
     </style>
   </head>
@@ -560,22 +589,45 @@
         document.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => { const f = S.findings.find((x) => x.id === b.dataset.id); if (f && confirm(`指摘「${f.title}」を削除しますか？`)) { S.findings = S.findings.filter((x) => x.id !== f.id); log("finding.delete", f.id, "ok"); save(); render(); toast("削除しました", "ok"); } }));
       }
       async function newFinding() {
-        const ok = await openModal("指摘 新規登録", `<div class="form-grid">
-          <label class="field full"><span>指摘名（必須）</span><input id="f_title" required /></label>
-          <label class="field"><span>重要度</span><select id="f_sev"><option>高</option><option selected>中</option><option>低</option></select></label>
-          <label class="field"><span>監査</span><input id="f_eng" value="デモ監査" /></label>
-          <label class="field full"><span>事実</span><textarea id="f_fact" rows="2"></textarea></label>
-          <label class="field full"><span>勧告</span><textarea id="f_rec" rows="2"></textarea></label>
-        </div>`, { okLabel: "登録" });
+        const ok = await openModal("指摘 新規登録", `<fieldset class="form-section">
+          <legend>基本情報</legend>
+          <div class="form-grid">
+            <label class="field full required"><span>指摘名</span><input id="f_title" required placeholder="例: 承認記録の保存漏れ" /></label>
+            <label class="field"><span>重要度</span><select id="f_sev"><option>高</option><option selected>中</option><option>低</option></select></label>
+            <label class="field"><span>状態</span><select id="f_status2">${["案", "確定", "回答待ち", "是正中", "終結", "再オープン"].map((s) => `<option>${s}</option>`).join("")}</select></label>
+            <label class="field"><span>監査</span><input id="f_eng" value="デモ監査" /></label>
+          </div>
+        </fieldset>
+        <fieldset class="form-section">
+          <legend>内容</legend>
+          <div class="form-grid">
+            <label class="field full"><span>事実</span><textarea id="f_fact" rows="3" placeholder="確認した事実を記載"></textarea></label>
+            <label class="field full"><span>勧告</span><textarea id="f_rec" rows="3" placeholder="推奨する対応"></textarea></label>
+          </div>
+        </fieldset>`, { okLabel: "登録" });
         if (!ok || !ok.submit) return;
         const title = document.getElementById("f_title").value.trim();
         if (!title) { toast("指摘名は必須です", "error"); return; }
-        S.findings.unshift({ id: uid("f"), title, severity: document.getElementById("f_sev").value, engagement: document.getElementById("f_eng").value.trim() || "デモ監査", status: "案", fact: document.getElementById("f_fact").value.trim(), recommendation: document.getElementById("f_rec").value.trim() });
+        S.findings.unshift({ id: uid("f"), title, severity: document.getElementById("f_sev").value, engagement: document.getElementById("f_eng").value.trim() || "デモ監査", status: document.getElementById("f_status2").value, fact: document.getElementById("f_fact").value.trim(), recommendation: document.getElementById("f_rec").value.trim() });
         log("finding.create", title, "ok"); save(); render();
         toast("指摘を登録しました", "ok");
       }
 
       /* AI */
+      let selectedDraftId = null;
+      function draftTitle(d) { const ag = S.agendas.find((a) => a.id === d.agendaId); return ag ? ag.title : d.agendaId; }
+      function renderDraftDetail(d) {
+        return `<div class="ai-result">
+          <p><strong>${esc(draftTitle(d))}</strong> <span class="badge ${d.status === "保存済み" ? "green" : d.status === "レビュー済み" ? "blue" : "gray"}">${esc(d.status)}</span> <span class="muted-small">${esc(d.model)}</span></p>
+          <p class="muted-small">作成: ${esc(d.createdAt)}</p>
+          <pre style="white-space:pre-wrap;font-size:0.85rem;background:#f8fafb;border:1px solid var(--border);border-radius:8px;padding:0.7rem">${esc(d.body)}</pre>
+          <p class="muted-small">出典: ${d.citations.length ? d.citations.map((c) => `<span class="cite">${esc(c)}</span>`).join(" ") : `<span class="badge red">出典なし</span>`}</p>
+          <div class="actions-row">
+            ${d.status === "レビュー済み" ? `<button type="button" class="btn" data-save="${d.id}">保存</button>` : ""}
+            ${d.status === "保存済み" ? `<button type="button" class="btn" data-share="${d.id}">共有</button>` : ""}
+          </div>
+        </div>`;
+      }
       function renderAI() {
         const opts = S.agendas.map((a) => `<option value="${a.id}">${esc(a.title)}</option>`).join("");
         const ls = S.aiDraftListSettings;
@@ -583,39 +635,50 @@
         if (ls.statusFilter) list = list.filter((d) => d.status === ls.statusFilter);
         list.sort((a, b) => (ls.order === "asc" ? a.createdAt.localeCompare(b.createdAt) : b.createdAt.localeCompare(a.createdAt)));
         const shown = ls.perPage ? list.slice(0, ls.perPage) : list;
-        const drafts = shown.map((d) => {
-          const ag = S.agendas.find((a) => a.id === d.agendaId);
-          return `<div class="ai-result"><p><strong>${esc(ag ? ag.title : d.agendaId)}</strong> <span class="badge ${d.status === "保存済み" ? "green" : d.status === "レビュー済み" ? "blue" : "gray"}">${esc(d.status)}</span> <span class="muted-small">${esc(d.model)}</span></p>
-          <pre style="white-space:pre-wrap;font-size:0.8rem">${esc(d.body)}</pre>
-          ${ls.showCitations ? `<p class="muted-small">出典: ${d.citations.length ? d.citations.map((c) => `<span class="cite">${esc(c)}</span>`).join(" ") : `<span class="badge red">出典なし</span>`}</p>` : ""}
-          <div class="actions-row">
-            ${d.status === "レビュー済み" ? `<button type="button" class="btn ghost" data-save="${d.id}">保存</button>` : ""}
-            ${d.status === "保存済み" ? `<button type="button" class="btn ghost" data-share="${d.id}">共有</button>` : ""}
-          </div></div>`;
-        }).join("");
+        if (selectedDraftId && !S.aiDrafts.some((d) => d.id === selectedDraftId)) selectedDraftId = null;
+        const selected = S.aiDrafts.find((d) => d.id === selectedDraftId) || null;
+        const listHtml = shown.map((d) => `<button type="button" class="draft-item ${d.id === selectedDraftId ? "selected" : ""}" data-select="${d.id}">
+          <div class="t">${esc(draftTitle(d))}</div>
+          <div class="m">${esc(d.status)} ／ ${esc(d.model)} ／ ${esc(d.createdAt)}</div>
+        </button>`).join("");
         return `<section class="panel">
-          <h2>AI活用（草案生成・レビュー・保存・共有）</h2>
-          <div class="toolbar">
-            <label class="field"><span>対象議案</span><select id="aiTarget">${opts}</select></label>
-            <button type="button" class="btn" id="aiGenerate">草案を生成</button>
-            <button type="button" class="btn ghost" id="aiOpenSettings">AI設定</button>
-          </div>
-          <div id="aiError"></div>
-          <div id="aiResult"></div>
           <div class="section-head">
-            <h2>草案一覧</h2>
+            <h2>AI活用（草案生成・レビュー・保存・共有）</h2>
             <button type="button" class="btn ghost" id="aiDraftListSettings">草案一覧の設定</button>
           </div>
-          <p class="muted-small">全${S.aiDrafts.length}件中 ${shown.length}件を表示（並び順: ${ls.order === "asc" ? "古い順" : "新しい順"}／1ページ: ${ls.perPage ? ls.perPage + "件" : "全件"}${ls.statusFilter ? "／状態: " + ls.statusFilter : ""}）</p>
-          ${drafts || '<p class="muted-small">まだ草案がありません</p>'}
+          <div class="ai-layout">
+            <div class="ai-left">
+              <div class="detail-panel">
+                <h3>草案を生成</h3>
+                <div class="form-grid">
+                  <label class="field full"><span>対象議案</span><select id="aiTarget">${opts}</select></label>
+                </div>
+                <div class="btn-row"><button type="button" class="btn" id="aiGenerate">草案を生成</button></div>
+                <div id="aiError"></div>
+              </div>
+              <div class="detail-panel">
+                <h3>草案一覧</h3>
+                <p class="muted-small">全${S.aiDrafts.length}件中 ${shown.length}件を表示（${ls.order === "asc" ? "古い順" : "新しい順"}／${ls.perPage ? ls.perPage + "件" : "全件"}${ls.statusFilter ? "／" + ls.statusFilter : ""}）</p>
+                ${listHtml || '<p class="muted-small">まだ草案がありません</p>'}
+              </div>
+            </div>
+            <div class="ai-right">
+              <div class="detail-panel">
+                <h3>詳細コンテンツ</h3>
+                <div id="aiResult">${selected ? renderDraftDetail(selected) : '<p class="muted-small">左の草案一覧から選択するか、「草案を生成」してください。</p>'}</div>
+              </div>
+              <div id="aiSettingsMount"></div>
+            </div>
+          </div>
         </section>`;
       }
       function bindAI() {
         document.getElementById("aiGenerate").addEventListener("click", generateDraft);
-        document.getElementById("aiOpenSettings").addEventListener("click", openAISettings);
         document.getElementById("aiDraftListSettings").addEventListener("click", openDraftListSettings);
+        document.querySelectorAll("[data-select]").forEach((b) => b.addEventListener("click", () => { selectedDraftId = b.dataset.select; render(); }));
         document.querySelectorAll("[data-save]").forEach((b) => b.addEventListener("click", () => { const d = S.aiDrafts.find((x) => x.id === b.dataset.save); if (d && d.status === "レビュー済み") { d.status = "保存済み"; log("ai.draft.save", d.id, "ok"); save(); render(); toast("保存しました（正式記録にはなりません）", "ok"); } }));
         document.querySelectorAll("[data-share]").forEach((b) => b.addEventListener("click", () => { const d = S.aiDrafts.find((x) => x.id === b.dataset.share); if (d && d.status === "保存済み") { d.status = "共有済み"; log("ai.draft.share", d.id, "ok"); save(); render(); toast("共有しました（デモ）", "ok"); } }));
+        renderAISettingsPanel(document.getElementById("aiSettingsMount"));
       }
       let pendingApiKey = "";
       function maskKeyInput(e) {
@@ -630,23 +693,29 @@
         const sources = (ag.sources || "").split(/\n+/).map((x) => x.trim()).filter(Boolean);
         if (s.requireCitations && sources.length === 0) {
           document.getElementById("aiError").innerHTML = `<div class="notice">AI設定が「出典必須」のため、出典（審議資料）がない議案は草案を生成できません。議案を編集して資料・出典を登録するか、AI設定を変更してください。</div>`;
-          document.getElementById("aiResult").innerHTML = "";
           return;
         }
         const citations = sources.slice(0, 5);
         const body = `論点整理（${ag.title}）:\n1. ${ag.summary || ag.title}（出典${citations.length ? "1" : "なし"}）\n${citations.map((c, i) => `${i + 2}. ${c}（出典${i + 1}）`).join("\n")}\n信頼限界: 本草案は人のレビューまで正式記録になりません。`;
         document.getElementById("aiError").innerHTML = "";
-        document.getElementById("aiResult").innerHTML = `<div class="ai-result"><pre style="white-space:pre-wrap;font-size:0.85rem">${esc(body)}</pre><p>出典: ${citations.length ? citations.map((c) => `<span class="cite">${esc(c)}</span>`).join(" ") : `<span class="badge red">出典なし</span>`}</p>
-        <div class="actions-row"><button type="button" class="btn" id="aiReview">レビュー承認（${currentPersona().role === "admin" || currentPersona().role === "kansa_yaku" || currentPersona().role === "internal_auditor" ? "可能" : "要：管理者/監査役/内部監査"}）</button>
-        <button type="button" class="btn ghost" id="aiDiscard">破棄</button></div></div>`;
+        document.getElementById("aiResult").innerHTML = `<div class="ai-result">
+          <p><strong>生成結果（未保存）</strong> <span class="muted-small">${esc(s.model)}</span></p>
+          <pre style="white-space:pre-wrap;font-size:0.85rem;background:#f8fafb;border:1px solid var(--border);border-radius:8px;padding:0.7rem">${esc(body)}</pre>
+          <p class="muted-small">出典: ${citations.length ? citations.map((c) => `<span class="cite">${esc(c)}</span>`).join(" ") : `<span class="badge red">出典なし</span>`}</p>
+          <div class="actions-row">
+            <button type="button" class="btn" id="aiReview">レビュー承認（${currentPersona().role === "admin" || currentPersona().role === "kansa_yaku" || currentPersona().role === "internal_auditor" ? "可能" : "要：管理者/監査役/内部監査"}）</button>
+            <button type="button" class="btn ghost" id="aiDiscard">破棄</button>
+          </div>
+        </div>`;
         document.getElementById("aiReview").addEventListener("click", () => {
           if (!["admin", "kansa_yaku", "internal_auditor"].includes(currentPersona().role)) { toast("このペルソナではレビューできません（AI設定: 人レビュー必須）", "error"); return; }
           const id = uid("ai");
           S.aiDrafts.unshift({ id, agendaId: ag.id, body, citations, status: s.requireHumanReview ? "レビュー済み" : "保存済み", model: s.model, createdAt: new Date().toLocaleString("ja-JP") });
+          selectedDraftId = id;
           log("ai.draft.review", id, "ok"); save(); render();
           toast("レビュー承認しました", "ok");
         });
-        document.getElementById("aiDiscard").addEventListener("click", () => { document.getElementById("aiResult").innerHTML = ""; toast("草案を破棄しました", "ok"); });
+        document.getElementById("aiDiscard").addEventListener("click", () => { document.getElementById("aiResult").innerHTML = '<p class="muted-small">草案を破棄しました。</p>'; toast("草案を破棄しました", "ok"); });
       }
       async function openDraftListSettings() {
         const ls = S.aiDraftListSettings;
@@ -664,30 +733,26 @@
         log("ai.draft_list_settings.update", "", "ok"); save(); render();
         toast("草案一覧の設定を保存しました", "ok");
       }
-      async function openAISettings() {
+      function renderAISettingsPanel(mount) {
         const s = S.aiSettings;
-        const p = openModal("AI設定", `<fieldset class="form-section">
-          <legend>モデル・接続</legend>
+        mount.innerHTML = `<div class="ai-settings-panel">
+          <div class="section-head"><h3>AI設定</h3></div>
           <div class="form-grid">
             <label class="field"><span>利用モデル</span><select id="s_model"><option value="DeepSeek" selected>DeepSeek</option></select></label>
             <label class="field full"><span>APIキー（入力内容は＊で表示・保存されません）</span><input type="text" id="s_key" class="key-mask" autocomplete="off" placeholder="${s.apiKeySet ? "（保存済み: ********）" : "sk-..."}" /></label>
+            <label class="field switch"><input type="checkbox" id="s_cite" ${s.requireCitations ? "checked" : ""} /> 出典必須（出典なしは生成拒否）</label>
+            <label class="field switch"><input type="checkbox" id="s_review" ${s.requireHumanReview ? "checked" : ""} /> 人レビュー必須</label>
+            <label class="field switch"><input type="checkbox" id="s_mask" ${s.maskConfidential ? "checked" : ""} /> 機密マスキング</label>
+            <label class="field"><span>保存上限（件）</span><input type="number" id="s_max" value="${s.maxDrafts}" min="1" max="100" /></label>
           </div>
           <div class="btn-row">
+            <button type="button" class="btn" id="s_save">設定保存</button>
             <button type="button" class="btn ghost" id="s_test">設定テスト</button>
             <button type="button" class="btn ghost" id="s_reset">入力リセット</button>
           </div>
           <div id="aiTestResult"></div>
-        </fieldset>
-        <fieldset class="form-section">
-          <legend>ガバナンス</legend>
-          <div class="form-grid">
-          <label class="field switch"><input type="checkbox" id="s_cite" ${s.requireCitations ? "checked" : ""} /> 出典必須（出典なしは生成拒否）</label>
-          <label class="field switch"><input type="checkbox" id="s_review" ${s.requireHumanReview ? "checked" : ""} /> 人レビュー必須</label>
-          <label class="field switch"><input type="checkbox" id="s_mask" ${s.maskConfidential ? "checked" : ""} /> 機密マスキング</label>
-          <label class="field"><span>保存上限（件）</span><input type="number" id="s_max" value="${s.maxDrafts}" min="1" max="100" /></label>
-          </div>
-        </fieldset>
-        <p class="muted-small">APIキーはこのモックアップ内でも保存しません（保存判定のみ記録）。草案一覧の表示設定は「草案一覧の設定」で行います。AIは決議・監査判断を代替しません。</p>`, { okLabel: "設定保存" });
+          <p class="hint">APIキーはこのモックアップ内でも保存しません（保存判定のみ記録）。草案一覧の表示設定は「草案一覧の設定」で行います。AIは決議・監査判断を代替しません。</p>
+        </div>`;
         const keyEl = document.getElementById("s_key");
         keyEl.addEventListener("input", maskKeyInput);
         document.getElementById("s_test").addEventListener("click", () => {
@@ -704,16 +769,16 @@
           document.getElementById("aiTestResult").innerHTML = "";
           toast("入力内容をリセットしました（未保存）", "ok");
         });
-        const ok = await p;
-        if (!ok || !ok.submit) return;
-        s.model = "DeepSeek";
-        if (pendingApiKey) { s.apiKeySet = true; pendingApiKey = ""; }
-        s.requireCitations = document.getElementById("s_cite").checked;
-        s.requireHumanReview = document.getElementById("s_review").checked;
-        s.maskConfidential = document.getElementById("s_mask").checked;
-        s.maxDrafts = Number(document.getElementById("s_max").value) || 20;
-        log("ai.settings.update", "", "ok"); save(); render();
-        toast("AI設定を保存しました", "ok");
+        document.getElementById("s_save").addEventListener("click", () => {
+          s.model = "DeepSeek";
+          if (pendingApiKey) { s.apiKeySet = true; pendingApiKey = ""; }
+          s.requireCitations = document.getElementById("s_cite").checked;
+          s.requireHumanReview = document.getElementById("s_review").checked;
+          s.maskConfidential = document.getElementById("s_mask").checked;
+          s.maxDrafts = Number(document.getElementById("s_max").value) || 20;
+          log("ai.settings.update", "", "ok"); save(); render();
+          toast("AI設定を保存しました", "ok");
+        });
       }
 
       /* システム設定 */
@@ -724,6 +789,7 @@
             <button type="button" class="active" data-tab="users">ユーザー</button>
             <button type="button" data-tab="groups">グループ</button>
             <button type="button" data-tab="roles">ロール</button>
+            <button type="button" data-tab="ai">AI設定</button>
           </div>
           <div id="settingsBody"></div>
         </section>`;
@@ -748,12 +814,15 @@
           document.getElementById("groupNew").addEventListener("click", () => groupForm());
           document.querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => groupForm(S.groups.find((g) => g.id === b.dataset.edit))));
           document.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => { const g = S.groups.find((x) => x.id === b.dataset.del); if (g && confirm(`グループ「${g.name}」を削除しますか？`)) { S.groups = S.groups.filter((x) => x.id !== g.id); log("settings.group.delete", g.id, "ok"); save(); renderSettingsTab("groups"); toast("削除しました", "ok"); } }));
-        } else {
+        } else if (tab === "roles") {
           body.innerHTML = `<div class="toolbar" style="margin-top:0.8rem"><button type="button" class="btn" id="roleNew">＋ ロール追加</button></div>
           <div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>ロール名</th><th>権限</th><th>操作</th></tr></thead><tbody>${S.roles.map((r) => `<tr><td>${esc(r.id)}</td><td>${esc(r.name)}</td><td class="muted-small">${esc(r.permissions.join(", "))}</td><td><div class="row-actions"><button type="button" class="btn ghost" data-edit="${r.id}">編集</button><button type="button" class="btn ghost" data-del="${r.id}">削除</button></div></td></tr>`).join("")}</tbody></table></div>`;
           document.getElementById("roleNew").addEventListener("click", () => roleForm());
           document.querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => roleForm(S.roles.find((r) => r.id === b.dataset.edit))));
           document.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => { const r = S.roles.find((x) => x.id === b.dataset.del); if (r && confirm(`ロール「${r.name}」を削除しますか？`)) { S.roles = S.roles.filter((x) => x.id !== r.id); log("settings.role.delete", r.id, "ok"); save(); renderSettingsTab("roles"); toast("削除しました", "ok"); } }));
+        } else {
+          body.innerHTML = `<div id="aiSettingsMountTab"></div><p class="muted-small">システム設定内のAI設定です。AI活用画面の右側にも同じ設定パネルが表示されます。</p>`;
+          renderAISettingsPanel(document.getElementById("aiSettingsMountTab"));
         }
       }
       async function userForm(u) {
