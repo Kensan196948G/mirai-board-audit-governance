@@ -43,7 +43,9 @@ npm run build
 
 ## Preview（Cloudflare Workers + D1）
 
-`npm run deploy:preview` で workers.dev にデプロイできます。Preview URL とデモアカウントは [docs/demo.md](./docs/demo.md) に記載します。
+動作確認中のPreview: **https://mirai-board-audit-governance-preview.kensan1969.workers.dev**
+
+デモアカウントはログイン画面の一覧から選択できます（すべて架空）。`npm run deploy:preview` で再デプロイできます。Preview URL とデモ手順は [docs/demo.md](./docs/demo.md) に記載します。
 
 ## ライセンス
 

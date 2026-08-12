@@ -7,6 +7,10 @@ export class SqliteDb implements Db {
   constructor(path: string | ":memory:") {
     this.db = new DatabaseSync(path);
     this.db.exec("PRAGMA foreign_keys = ON;");
+    // ローカル開発用DBのシード・テスト高速化（本番はD1。Durabilityはローカルのみ非同期）
+    if (path !== ":memory:") {
+      this.db.exec("PRAGMA synchronous = OFF;");
+    }
   }
 
   all<T = Record<string, unknown>>(sql: string, ...params: SqlValue[]): Promise<T[]> {
@@ -42,6 +46,11 @@ export class SqliteDb implements Db {
       this.db.exec("ROLLBACK;");
       throw e;
     }
+  }
+
+  exec(sql: string): Promise<void> {
+    this.db.exec(sql);
+    return Promise.resolve();
   }
 
   close() {
