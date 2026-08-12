@@ -1,0 +1,21 @@
+[Unit]
+Description=Mirai Board & Audit Governance WebUI (HTML documents and Part4 mockup)
+Documentation=https://github.com/Kensan196948G/mirai-board-audit-governance
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=kensan
+Group=kensan
+WorkingDirectory=/home/kensan/Projects/Mirai-New-Project/mirai-board-audit-governance
+Environment=HOST=0.0.0.0
+Environment=PORT=8090
+ExecStart=/home/kensan/.nvm/versions/node/v25.2.1/bin/node /home/kensan/Projects/Mirai-New-Project/mirai-board-audit-governance/scripts/webui-server.mjs
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

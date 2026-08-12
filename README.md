@@ -47,6 +47,20 @@ npm run build
 
 デモアカウントはログイン画面の一覧から選択できます（すべて架空）。`npm run deploy:preview` で再デプロイできます。Preview URL とデモ手順は [docs/demo.md](./docs/demo.md) に記載します。
 
+## WebUI（HTML文書・モックアップ配信）
+
+提示されたHTMLファイル（企画書・要件定義書・詳細仕様設計書・モックアップPart4）を、元の内容のまま配信するWebUIを用意しています。systemdサービスとして常時起動しています。
+
+- URL: http://192.168.0.185:8090/
+- 実体: [webui/index.html](./webui/index.html)（ランチャー）＋ [scripts/webui-server.mjs](./scripts/webui-server.mjs)（Node製HTTPサーバー）
+- systemdユニット: [deploy/mirai-board-webui.service](./deploy/mirai-board-webui.service)（`sudo systemctl status mirai-board-webui` で確認）
+
+手動起動する場合:
+
+```bash
+HOST=0.0.0.0 PORT=8090 node scripts/webui-server.mjs
+```
+
 ## ライセンス
 
 未設定（権利者判断が必要）。詳細は [docs/backlog.md](./docs/backlog.md) の B-01 を参照。
