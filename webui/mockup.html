@@ -3,35 +3,714 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>モックアップ Part4｜みらい取締役会・監査統合基盤 WebUI</title>
-    <meta name="description" content="みらい取締役会・監査統合基盤 モックアップPart4（役割別画面・ダミーデータ・例外状態）" />
+    <title>モックアップ｜みらい取締役会・監査統合基盤 WebUI</title>
+    <meta name="description" content="みらい取締役会・監査統合基盤 モックアップ（経営ダッシュボード・新規登録・CSV/Excelインポート・システム設定・AI活用）" />
     <link rel="stylesheet" href="./assets/styles.css" />
+    <style>
+      .app-shell { display: flex; min-height: 100vh; }
+      .side {
+        width: 230px; flex-shrink: 0; background: #fff; border-right: 1px solid var(--border);
+        display: flex; flex-direction: column; gap: 0.9rem; padding: 1rem 0.75rem; position: sticky; top: 0; height: 100vh;
+      }
+      .side .brand { padding: 0 0.5rem; }
+      .side label { font-size: 0.72rem; color: var(--muted); padding: 0 0.5rem; }
+      .side select { width: 100%; border: 1px solid var(--border); border-radius: 7px; padding: 0.4rem 0.5rem; }
+      .side nav { display: flex; flex-direction: column; gap: 2px; }
+      .side nav button {
+        border: none; background: none; text-align: left; padding: 0.5rem 0.75rem; border-radius: 7px;
+        color: #1a2433; font-size: 0.88rem; cursor: pointer;
+      }
+      .side nav button:hover { background: #eef1f5; }
+      .side nav button.active { background: var(--accent); color: #fff; }
+      .side .side-foot { margin-top: auto; display: flex; flex-direction: column; gap: 0.4rem; }
+      .main-col { flex: 1; min-width: 0; }
+      .top-strip {
+        background: #fff; border-bottom: 1px solid var(--border); padding: 0.6rem 1.2rem;
+        display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; position: sticky; top: 0; z-index: 10;
+      }
+      .top-strip h1 { margin: 0; font-size: 1rem; flex: 1; }
+      .content-col { padding: 1.2rem 1.4rem 3rem; display: flex; flex-direction: column; gap: 1rem; max-width: 1180px; }
+      .toolbar { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
+      .toolbar input[type="search"], .toolbar select { border: 1px solid var(--border); border-radius: 7px; padding: 0.4rem 0.6rem; }
+      .kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.8rem; }
+      .kpi { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1rem; }
+      .kpi .v { font-size: 1.6rem; font-weight: 700; }
+      .kpi .v small { font-size: 0.75rem; color: var(--muted); font-weight: 500; }
+      .kpi .l { font-size: 0.78rem; color: var(--muted); }
+      .kpi .b { font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem; }
+      .tabs { display: flex; gap: 0.4rem; border-bottom: 1px solid var(--border); }
+      .tabs button { border: none; background: none; padding: 0.5rem 0.9rem; cursor: pointer; font-size: 0.85rem; border-bottom: 2px solid transparent; }
+      .tabs button.active { border-bottom-color: var(--accent); color: var(--accent); font-weight: 700; }
+      .modal-overlay {
+        position: fixed; inset: 0; background: rgba(26,36,51,0.45); display: none; align-items: flex-start; justify-content: center;
+        padding: 5vh 1rem; z-index: 50; overflow-y: auto;
+      }
+      .modal-overlay.open { display: flex; }
+      .modal { background: #fff; border-radius: 12px; width: min(720px, 100%); padding: 1.2rem 1.4rem; }
+      .modal h2 { margin: 0 0 0.8rem; font-size: 1.05rem; }
+      .modal .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+      .modal .full { grid-column: 1 / -1; }
+      .modal .actions { display: flex; gap: 0.6rem; justify-content: flex-end; margin-top: 1rem; }
+      .import-preview { max-height: 320px; overflow: auto; border: 1px solid var(--border); border-radius: 8px; }
+      .import-preview table { font-size: 0.75rem; }
+      .toast-wrap { position: fixed; right: 1rem; bottom: 1rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 60; }
+      .toast { background: #1a2433; color: #fff; border-radius: 8px; padding: 0.6rem 1rem; font-size: 0.82rem; box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
+      .toast.error { background: var(--red); }
+      .toast.ok { background: var(--green); }
+      .role-perms { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.3rem; font-size: 0.8rem; }
+      .role-perms label { display: flex; gap: 0.35rem; align-items: center; }
+      .ai-result { background: #f8fafb; border: 1px solid var(--border); border-radius: 8px; padding: 0.8rem 1rem; }
+      .cite { background: var(--green-bg); color: var(--green); border-radius: 999px; font-size: 0.68rem; padding: 0.1rem 0.5rem; }
+      .switch { display: inline-flex; align-items: center; gap: 0.4rem; }
+      .muted-small { color: var(--muted); font-size: 0.75rem; }
+      @media (max-width: 760px) {
+        .app-shell { flex-direction: column; }
+        .side { width: 100%; height: auto; position: static; flex-direction: row; flex-wrap: wrap; align-items: center; }
+        .side nav { flex-direction: row; flex-wrap: wrap; }
+        .side-foot { display: none; }
+        .modal .form-grid { grid-template-columns: 1fr; }
+      }
+    </style>
   </head>
-  <body class="viewer">
-    <nav class="topnav" aria-label="メインナビゲーション">
-      <span class="brand"><span class="mark" aria-hidden="true"></span>みらい取締役会・監査統合基盤</span>
-      <a class="nav-link" href="./index.html">ホーム</a>
-      <a class="nav-link current" href="./mockup.html" aria-current="page">モックアップPart4</a>
-      <a class="nav-link" href="./guide.html">デモガイド</a>
-      <a class="nav-link" href="./requirements.html">要件対応</a>
-      <a class="nav-link" href="./api.html">API概要</a>
-      <a class="nav-link" href="./history.html">変更履歴</a>
-      <span class="spacer"></span>
-      <span class="url-badge">https://mbag.mirai-dx-platform.com</span>
-    </nav>
-    <div class="viewer-bar">
-      <h1>モックアップ Part4（役割別画面・ダミーデータ・例外状態）</h1>
-      <span class="note">オリジナルHTMLを無加工で表示しています</span>
-      <a class="btn ghost" href="./%E3%81%BF%E3%82%89%E3%81%84%E5%8F%96%E7%B7%A0%E5%BD%B9%E4%BC%9A%E3%83%BB%E7%9B%A3%E6%9F%BB%E7%B5%B1%E5%90%88%E5%9F%BA%E7%9B%A4%E3%83%A2%E3%83%83%E3%82%AF%E3%82%A2%E3%83%83%E3%83%97Part4.html" target="_blank" rel="noopener">新しいタブで開く</a>
-      <a class="btn ghost" href="./%E3%81%BF%E3%82%89%E3%81%84%E5%8F%96%E7%B7%A0%E5%BD%B9%E4%BC%9A%E3%83%BB%E7%9B%A3%E6%9F%BB%E7%B5%B1%E5%90%88%E5%9F%BA%E7%9B%A4%E3%83%A2%E3%83%83%E3%82%AF%E3%82%A2%E3%83%83%E3%83%97Part4.html" download>ダウンロード</a>
+  <body>
+    <div class="app-shell" id="app">
+      <aside class="side" aria-label="モックアップナビゲーション">
+        <div class="brand"><span class="mark" aria-hidden="true"></span><div><strong>みらい取締役会・監査統合基盤</strong><small>モックアップ（拡張デモ）</small></div></div>
+        <label for="persona">ペルソナ切替</label>
+        <select id="persona" aria-label="ペルソナ"></select>
+        <nav id="nav" aria-label="セクション"></nav>
+        <div class="side-foot">
+          <a class="btn ghost" href="./index.html">WebUIホームへ</a>
+          <a class="btn ghost" href="./%E3%81%BF%E3%82%89%E3%81%84%E5%8F%96%E7%B7%A0%E5%BD%B9%E4%BC%9A%E3%83%BB%E7%9B%A3%E6%9F%BB%E7%B5%B1%E5%90%88%E5%9F%BA%E7%9B%A4%E3%83%A2%E3%83%83%E3%82%AF%E3%82%A2%E3%83%83%E3%83%97Part4.html" target="_blank" rel="noopener">オリジナルPart4を開く</a>
+          <button type="button" class="btn ghost" id="resetBtn">デモデータをリセット</button>
+        </div>
+      </aside>
+      <div class="main-col">
+        <header class="top-strip">
+          <h1 id="pageTitle">統制ダッシュボード</h1>
+          <span class="badge badge-gray">デモ用・架空データ</span>
+          <span id="userBadge" class="badge badge-blue"></span>
+        </header>
+        <main class="content-col" id="view"></main>
+      </div>
     </div>
-    <iframe
-      title="モックアップ Part4"
-      src="./%E3%81%BF%E3%82%89%E3%81%84%E5%8F%96%E7%B7%A0%E5%BD%B9%E4%BC%9A%E3%83%BB%E7%9B%A3%E6%9F%BB%E7%B5%B1%E5%90%88%E5%9F%BA%E7%9B%A4%E3%83%A2%E3%83%83%E3%82%AF%E3%82%A2%E3%83%83%E3%83%97Part4.html"
-      loading="eager"
-    ></iframe>
-    <div class="notice" style="margin:0.5rem 1rem">
-      注意: モックアップ内のボタンの多くは仕様確認用の「表示例」で、無反応は意図された疑似動作です。権限のない操作は無効化表示されます（要件定義書 SCR-10・UI共通仕様に準拠）。WebUI上部のナビゲーションはすべて動作します。
+    <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal">
+        <h2 id="modalTitle">新規登録</h2>
+        <div id="modalBody"></div>
+        <div class="actions">
+          <button type="button" class="btn ghost" id="modalCancel">キャンセル</button>
+          <button type="button" class="btn" id="modalOk">登録</button>
+        </div>
+      </div>
     </div>
+    <div class="toast-wrap" id="toasts" aria-live="polite"></div>
+    <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" style="display:none" />
+    <script src="./assets/vendor/xlsx.full.min.js"></script>
+    <script>
+      "use strict";
+      /* ============ 状態 ============ */
+      const LS_KEY = "mbag_mockup_v1";
+      const PERSONAS = [
+        { id: "keiei", name: "経営（代表取締役 佐藤美咲）", role: "director" },
+        { id: "jimu", name: "事務局（高橋一樹）", role: "secretariat" },
+        { id: "audit", name: "内部監査（山田拓也）", role: "internal_auditor" },
+        { id: "kansa", name: "監査役（中村健一）", role: "kansa_yaku" },
+        { id: "admin", name: "システム管理者（林知佳）", role: "admin" },
+      ];
+      const ROLE_PERMISSIONS = [
+        "dashboard:view", "agenda:manage", "finding:manage", "meeting:view", "auditlog:view", "ai:use", "settings:manage", "import:use"
+      ];
+      function seedState() {
+        const users = [
+          { id: "u1", name: "佐藤美咲", email: "sato.misaki@example.jp", role: "取締役", group: "取締役会", active: true },
+          { id: "u2", name: "高橋一樹", email: "takahashi.kazuki@example.jp", role: "事務局", group: "総務部", active: true },
+          { id: "u3", name: "山田拓也", email: "yamada.takuya@example.jp", role: "内部監査", group: "内部監査室", active: true },
+          { id: "u4", name: "中村健一", email: "nakamura.kenichi@example.jp", role: "監査役", group: "監査役会", active: true },
+          { id: "u5", name: "林知佳", email: "hayashi.chika@example.jp", role: "システム管理者", group: "IT企画部", active: true },
+          { id: "u6", name: "田中洋一", email: "tanaka.yoichi@example.jp", role: "主管", group: "経営戦略部", active: true },
+        ];
+        const groups = [
+          { id: "g1", name: "取締役会", description: "会社の業務執行を監督する会議体", members: ["佐藤美咲"] },
+          { id: "g2", name: "総務部", description: "会議体事務局・記録管理を所管", members: ["高橋一樹"] },
+          { id: "g3", name: "内部監査室", description: "内部監査・独立評価を所管", members: ["山田拓也"] },
+          { id: "g4", name: "監査役会", description: "取締役の職務執行を監査", members: ["中村健一"] },
+          { id: "g5", name: "IT企画部", description: "システム・セキュリティを所管", members: ["林知佳"] },
+        ];
+        const roles = [
+          { id: "r1", name: "取締役", permissions: ["dashboard:view", "agenda:manage", "meeting:view", "ai:use"] },
+          { id: "r2", name: "事務局", permissions: ["dashboard:view", "agenda:manage", "import:use", "meeting:view"] },
+          { id: "r3", name: "内部監査", permissions: ["dashboard:view", "finding:manage", "import:use", "ai:use"] },
+          { id: "r4", name: "監査役", permissions: ["dashboard:view", "meeting:view", "auditlog:view"] },
+          { id: "r5", name: "システム管理者", permissions: ["dashboard:view", "settings:manage", "auditlog:view", "ai:use", "import:use"] },
+        ];
+        const agendas = [
+          { id: "ag1", title: "子会社みらいエナジー株式会社 株式譲渡契約の締結", type: "重要案件", classification: "秘", owner: "田中洋一", due: "2026-08-18", status: "決議確定", urgent: true, summary: "連結子会社の全株式をソラリス電力株式会社へ譲渡する契約の承認", sources: "株式譲渡契約書ドラフトv3（第4条 表明保証）／デューデリジェンス報告書要約（第5章 法務）" },
+          { id: "ag2", title: "中期経営計画2027年度方針の承認", type: "経営方針", classification: "秘", owner: "田中洋一", due: "2026-08-18", status: "審議中", urgent: false, summary: "2027〜2029年度の中期経営計画方針", sources: "中期経営計画方針骨子v2（1. 基本方針／3. 経営指標）" },
+          { id: "ag3", title: "内部統制報告制度の運用方針改定", type: "規程改定", classification: "内部", owner: "木村佳代", due: "2026-08-25", status: "提出済み", urgent: false, summary: "財務報告に係る内部統制の評価手続", sources: "" },
+          { id: "ag4", title: "連結子会社への債務保証枠設定", type: "資金調達", classification: "秘", owner: "木村佳代", due: "2026-07-21", status: "決議確定", urgent: false, summary: "上限100億円の債務保証枠", sources: "債務保証枠設定稟議書（全頁）" },
+        ];
+        const meetings = [
+          { id: "m1", title: "2026年8月 取締役会（第12回）", heldAt: "2026-08-18 10:00", status: "開催中" },
+          { id: "m2", title: "2026年7月 取締役会（第11回）", heldAt: "2026-07-21 10:00", status: "確定" },
+        ];
+        const findings = [
+          { id: "f1", title: "保証枠設定時のEvidence保存漏れ", severity: "中", engagement: "資金調達・財務報告プロセス監査", status: "案", fact: "サンプル20件中2件で承認記録の保存が未確認", recommendation: "承認時に自動でEvidence保存を促す運用" },
+          { id: "f2", title: "保証枠の上限管理における二重承認", severity: "高", engagement: "資金調達・財務報告プロセス監査", status: "確定", fact: "稟議承認と取締役会決議の順序が一部逆転", recommendation: "チェックリスト導入と是正報告手順の明確化" },
+          { id: "f3", title: "報告対象範囲の記載漏れ", severity: "低", engagement: "資金調達・財務報告プロセス監査", status: "回答待ち", fact: "報告対象一覧が稟議書に未明記", recommendation: "報告対象一覧の標準様式化" },
+          { id: "f4", title: "モニタリング報告の遅延", severity: "中", engagement: "資金調達・財務報告プロセス監査", status: "再オープン", fact: "四半期報告が1回締切超過", recommendation: "報告データの自動集計化" },
+        ];
+        const aiDrafts = [
+          { id: "ai1", agendaId: "ag2", body: "論点整理: 中期経営計画方針骨子に基づき、ROE 10%以上・連結売上高CAGR 5%を目標とする（出典1）。成長投資枠は既存事業のキャッシュフローを上限とする（出典1）。", citations: ["中期経営計画方針骨子v2"], status: "レビュー済み", model: "rule-based-demo", createdAt: "2026-08-12 09:00" },
+          { id: "ai2", agendaId: "ag1", body: "論点整理: 譲渡価額は評価レンジ内（580〜620億円）（出典1）。従業員承継条件の確定がクロージング前提条件（出典2）。", citations: ["株式譲渡契約書ドラフトv3", "デューデリジェンス報告書要約"], status: "保存済み", model: "rule-based-demo", createdAt: "2026-08-12 09:10" },
+        ];
+        const aiSettings = { model: "rule-based-demo", requireCitations: true, requireHumanReview: true, maskConfidential: true, maxDrafts: 20 };
+        const auditLog = [
+          { at: "2026-08-12 09:10", actor: "山田拓也", action: "ai.draft.save", resource: "ai2", result: "ok" },
+          { at: "2026-08-12 09:00", actor: "山田拓也", action: "ai.draft.create", resource: "ag2", result: "ok" },
+          { at: "2026-08-12 08:40", actor: "佐々木誠", action: "finding.finalize", resource: "f2", result: "ok" },
+          { at: "2026-08-11 12:00", actor: "高橋一樹", action: "package.fix", resource: "ag1", result: "ok" },
+          { at: "2026-08-11 10:30", actor: "高橋一樹", action: "conflict.determine", resource: "ag1", result: "ok" },
+        ];
+        return { users, groups, roles, agendas, meetings, findings, aiDrafts, aiSettings, auditLog };
+      }
+      function load() {
+        try {
+          const raw = localStorage.getItem(LS_KEY);
+          if (raw) return JSON.parse(raw);
+        } catch (e) { /* ignore */ }
+        return seedState();
+      }
+      let S = load();
+      let persona = "keiei";
+      let viewName = "dashboard";
+      let importContext = null;
+
+      function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) { /* ignore */ } }
+      function log(action, resource, result) {
+        S.auditLog.unshift({ at: new Date().toLocaleString("ja-JP"), actor: currentPersona().name.replace(/（.*/, ""), action, resource, result: result || "ok" });
+        if (S.auditLog.length > 200) S.auditLog.length = 200;
+        save();
+      }
+      function currentPersona() { return PERSONAS.find((p) => p.id === persona) || PERSONAS[0]; }
+      function uid(prefix) { return prefix + "_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+      function esc(s) { return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]); }
+      function toast(msg, type) {
+        const el = document.createElement("div");
+        el.className = "toast" + (type ? " " + type : "");
+        el.textContent = msg;
+        document.getElementById("toasts").appendChild(el);
+        setTimeout(() => el.remove(), 3500);
+      }
+      function setView(name) { viewName = name; render(); }
+
+      /* ============ モーダル ============ */
+      let modalResolve = null;
+      function openModal(title, html, { okLabel = "登録" } = {}) {
+        return new Promise((resolve) => {
+          modalResolve = resolve;
+          document.getElementById("modalTitle").textContent = title;
+          document.getElementById("modalBody").innerHTML = html;
+          document.getElementById("modalOk").textContent = okLabel;
+          document.getElementById("modalOverlay").classList.add("open");
+          const first = document.querySelector("#modalBody input, #modalBody select, #modalBody textarea");
+          if (first) first.focus();
+        });
+      }
+      function closeModal(value) {
+        document.getElementById("modalOverlay").classList.remove("open");
+        if (modalResolve) { modalResolve(value); modalResolve = null; }
+      }
+      document.getElementById("modalCancel").addEventListener("click", () => closeModal(null));
+      document.getElementById("modalOk").addEventListener("click", () => closeModal({ submit: true }));
+      document.getElementById("modalOverlay").addEventListener("click", (e) => { if (e.target.id === "modalOverlay") closeModal(null); });
+
+      /* ============ CSV / Excel ============ */
+      function parseCSV(text) {
+        const rows = []; let row = [], field = "", inQ = false;
+        for (let i = 0; i < text.length; i++) {
+          const ch = text[i];
+          if (inQ) {
+            if (ch === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else inQ = false; }
+            else field += ch;
+          } else if (ch === '"') inQ = true;
+          else if (ch === ",") { row.push(field); field = ""; }
+          else if (ch === "\n" || ch === "\r") {
+            if (ch === "\r" && text[i + 1] === "\n") i++;
+            row.push(field); field = "";
+            if (row.some((c) => c.trim() !== "")) rows.push(row);
+            row = [];
+          } else field += ch;
+        }
+        row.push(field);
+        if (row.some((c) => c.trim() !== "")) rows.push(row);
+        return rows;
+      }
+      function normalizeHeader(h) {
+        const map = {
+          "件名": "title", "タイトル": "title", "title": "title",
+          "種別": "type", "type": "type",
+          "機密区分": "classification", "機密": "classification",
+          "担当": "owner", "担当者": "owner", "主管": "owner",
+          "期限": "due", "due": "due",
+          "状態": "status", "status": "status",
+          "重要度": "severity", "severity": "severity",
+          "監査": "engagement", "engagement": "engagement",
+          "事実": "fact", "fact": "fact",
+          "勧告": "recommendation", "recommendation": "recommendation",
+          "名前": "name", "氏名": "name", "name": "name",
+          "メール": "email", "email": "email",
+          "ロール": "role", "役割": "role", "role": "role",
+          "グループ": "group", "group": "group",
+          "概要": "summary", "summary": "summary",
+          "出典": "sources", "資料": "sources", "sources": "sources",
+        };
+        return map[String(h || "").trim()] || String(h || "").trim();
+      }
+      function rowsToObjects(rows) {
+        if (!rows.length) return [];
+        const headers = rows[0].map(normalizeHeader);
+        return rows.slice(1).filter((r) => r.some((c) => String(c).trim() !== "")).map((r) => {
+          const o = {};
+          headers.forEach((h, i) => { if (h && r[i] !== undefined) o[h] = String(r[i]).trim(); });
+          return o;
+        });
+      }
+      function readFileAsText(file) {
+        return new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(String(r.result));
+          r.onerror = reject;
+          r.readAsText(file, "UTF-8");
+        });
+      }
+      function readFileAsArrayBuffer(file) {
+        return new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(r.result);
+          r.onerror = reject;
+          r.readAsArrayBuffer(file);
+        });
+      }
+      async function handleImport(kind) {
+        const input = document.getElementById("fileInput");
+        input.value = "";
+        input.onchange = async () => {
+          const file = input.files && input.files[0];
+          if (!file) return;
+          try {
+            let rows;
+            const lower = file.name.toLowerCase();
+            if (lower.endsWith(".csv")) rows = parseCSV(await readFileAsText(file));
+            else if (lower.endsWith(".xlsx") || lower.endsWith(".xls")) {
+              if (!window.XLSX) { toast("Excel読込ライブラリが読み込めませんでした", "error"); return; }
+              const wb = XLSX.read(await readFileAsArrayBuffer(file), { type: "array" });
+              const ws = wb.Sheets[wb.SheetNames[0]];
+              rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+            } else { toast("対応形式は CSV / XLSX / XLS です", "error"); return; }
+            const items = rowsToObjects(rows);
+            if (!items.length) { toast("取り込める行がありませんでした", "error"); return; }
+            importContext = { kind, items };
+            const preview = items.slice(0, 20).map((it) => "<tr>" + Object.keys(it).map((k) => `<td>${esc(it[k])}</td>`).join("") + "</tr>").join("");
+            const headers = Object.keys(items[0] || {}).map((h) => `<th>${esc(h)}</th>`).join("");
+            const ok = await openModal(`インポート確認（${items.length}行）`, `<p class="muted-small">1行目をヘッダーとして読み取りました。下記を登録します。</p><div class="import-preview"><table><thead><tr>${headers}</tr></thead><tbody>${preview}</tbody></table></div>${items.length > 20 ? `<p class="muted-small">先頭20行のみ表示（全${items.length}行を登録）</p>` : ""}`, { okLabel: "一括登録" });
+            if (ok && ok.submit) {
+              const n = applyImport(items);
+              toast(`${n}件を登録しました（${kind}）`, "ok");
+              log("import." + kind, `${n}件`, "ok");
+              render();
+            }
+          } catch (e) {
+            toast("インポートに失敗: " + (e && e.message ? e.message : e), "error");
+          }
+        };
+        input.click();
+      }
+      function applyImport(items) {
+        let n = 0;
+        for (const it of items) {
+          if (importContext.kind === "agenda") {
+            if (!it.title) continue;
+            S.agendas.unshift({ id: uid("ag"), title: it.title, type: it.type || "その他", classification: it.classification || "内部", owner: it.owner || currentPersona().name.replace(/（.*/, ""), due: it.due || "", status: it.status || "下書き", urgent: false, summary: it.summary || "", sources: it.sources || "" });
+          } else if (importContext.kind === "finding") {
+            if (!it.title) continue;
+            S.findings.unshift({ id: uid("f"), title: it.title, severity: it.severity || "中", engagement: it.engagement || "デモ監査", status: it.status || "案", fact: it.fact || "", recommendation: it.recommendation || "" });
+          } else if (importContext.kind === "user") {
+            if (!it.name) continue;
+            S.users.unshift({ id: uid("u"), name: it.name, email: it.email || "", role: it.role || "利用者", group: it.group || "未所属", active: true });
+          }
+          n++;
+        }
+        save();
+        return n;
+      }
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        if (confirm("デモデータを初期状態に戻しますか？")) {
+          S = seedState(); save(); render();
+          toast("デモデータをリセットしました", "ok");
+        }
+      });
+
+      /* ============ レンダリング ============ */
+      const NAV_ITEMS = [
+        { id: "dashboard", label: "統制ダッシュボード", roles: ["director", "secretariat", "internal_auditor", "kansa_yaku", "admin"] },
+        { id: "agenda", label: "会議・議案", roles: ["director", "secretariat", "kansa_yaku", "admin"] },
+        { id: "finding", label: "指摘・是正", roles: ["internal_auditor", "admin"] },
+        { id: "ai", label: "AI活用", roles: ["director", "secretariat", "internal_auditor", "admin"] },
+        { id: "settings", label: "システム設定", roles: ["admin"] },
+        { id: "auditlog", label: "監査ログ", roles: ["kansa_yaku", "admin"] },
+      ];
+      function render() {
+        const p = currentPersona();
+        const personaSel = document.getElementById("persona");
+        personaSel.innerHTML = PERSONAS.map((x) => `<option value="${x.id}" ${x.id === persona ? "selected" : ""}>${esc(x.name)}</option>`).join("");
+        const allowed = NAV_ITEMS.filter((n) => n.roles.includes(p.role));
+        if (!allowed.some((n) => n.id === viewName)) viewName = allowed[0] ? allowed[0].id : "dashboard";
+        document.getElementById("nav").innerHTML = allowed.map((n) => `<button type="button" class="${n.id === viewName ? "active" : ""}" data-view="${n.id}">${esc(n.label)}</button>`).join("");
+        document.querySelectorAll("#nav button").forEach((b) => b.addEventListener("click", () => setView(b.dataset.view)));
+        document.getElementById("userBadge").textContent = p.name;
+        const title = allowed.find((n) => n.id === viewName);
+        document.getElementById("pageTitle").textContent = title ? title.label : "";
+        const view = document.getElementById("view");
+        if (viewName === "dashboard") view.innerHTML = renderDashboard();
+        else if (viewName === "agenda") view.innerHTML = renderAgenda();
+        else if (viewName === "finding") view.innerHTML = renderFinding();
+        else if (viewName === "ai") view.innerHTML = renderAI();
+        else if (viewName === "settings") view.innerHTML = renderSettings();
+        else if (viewName === "auditlog") view.innerHTML = renderAuditLog();
+        bindView(viewName);
+        save();
+      }
+      function bindView(name) {
+        if (name === "dashboard") {
+          document.querySelectorAll("[data-goto]").forEach((b) => b.addEventListener("click", () => setView(b.dataset.goto)));
+        } else if (name === "agenda") {
+          bindAgenda();
+        } else if (name === "finding") {
+          bindFinding();
+        } else if (name === "ai") {
+          bindAI();
+        } else if (name === "settings") {
+          bindSettings();
+        } else if (name === "auditlog") {
+          document.getElementById("chainVerify").addEventListener("click", () => toast("監査ログチェーン検証: 全" + S.auditLog.length + "件が一致（欠番なし）", "ok"));
+        }
+      }
+
+      /* ダッシュボード */
+      function renderDashboard() {
+        const decided = S.agendas.filter((a) => a.status === "決議確定").length;
+        const closed = S.findings.filter((f) => f.status === "終結").length;
+        const aiWithCite = S.aiDrafts.filter((d) => d.citations.length > 0).length;
+        const kpis = [
+          { label: "議案登録数", value: S.agendas.length, unit: "件", basis: "議案一覧の実データ" },
+          { label: "決議確定率", value: S.agendas.length ? Math.round((decided / S.agendas.length) * 100) : 0, unit: "%", basis: `確定 ${decided} / 全 ${S.agendas.length}` },
+          { label: "指摘登録数", value: S.findings.length, unit: "件", basis: "指摘・是正の実データ" },
+          { label: "是正終結率", value: S.findings.length ? Math.round((closed / S.findings.length) * 100) : 0, unit: "%", basis: `終結 ${closed} / 全 ${S.findings.length}` },
+          { label: "AI草案の出典付与率", value: S.aiDrafts.length ? Math.round((aiWithCite / S.aiDrafts.length) * 100) : 0, unit: "%", basis: `出典あり ${aiWithCite} / 全 ${S.aiDrafts.length}` },
+          { label: "重大な権限逸脱", value: 0, unit: "件", basis: "監査ログ・権限試験で確認" },
+          { label: "監査イベント数", value: S.auditLog.length, unit: "件", basis: "追記型監査ログ" },
+          { label: "Evidence Manifest", value: S.agendas.filter((a) => a.status === "決議確定").length, unit: "件", basis: "決議確定時に封緘" },
+        ];
+        const recent = S.auditLog.slice(0, 8).map((e) => `<tr><td>${esc(e.at)}</td><td>${esc(e.actor)}</td><td>${esc(e.action)}</td><td>${esc(e.resource)}</td><td>${esc(e.result)}</td></tr>`).join("");
+        return `
+          <p class="muted-small">経営ペルソナのトップ画面です。KPIはモックアップ内の実データから自動計算されます。</p>
+          <div class="kpis">${kpis.map((k) => `<div class="kpi"><div class="l">${esc(k.label)}</div><div class="v">${k.value}<small> ${esc(k.unit)}</small></div><div class="b">${esc(k.basis)}</div></div>`).join("")}</div>
+          <section class="panel" style="margin-top:1rem"><h2>最近の監査イベント</h2><div style="overflow-x:auto"><table><thead><tr><th>日時</th><th>主体</th><th>操作</th><th>対象</th><th>結果</th></tr></thead><tbody>${recent}</tbody></table></div>
+          <div class="actions-row"><button type="button" class="btn" data-goto="agenda">議案へ</button><button type="button" class="btn ghost" data-goto="finding">指摘・是正へ</button><button type="button" class="btn ghost" data-goto="ai">AI活用へ</button></div></section>`;
+      }
+
+      /* 議案 */
+      function renderAgenda() {
+        const rows = S.agendas.map((a) => `<tr>
+          <td>${a.urgent ? "🔺 " : ""}${esc(a.title)}</td><td>${esc(a.type)}</td><td>${esc(a.classification)}</td><td>${esc(a.owner)}</td><td>${esc(a.due || "—")}</td>
+          <td><span class="badge ${a.status === "決議確定" ? "green" : a.status === "取下げ" ? "red" : "gray"}">${esc(a.status)}</span></td>
+          <td><div class="row-actions">
+            <select aria-label="状態変更" data-status data-id="${a.id}">${["下書き","提出済み","審議中","決議確定","取下げ"].map((s) => `<option ${s === a.status ? "selected" : ""}>${s}</option>`).join("")}</select>
+            <button type="button" class="btn ghost" data-detail data-id="${a.id}">詳細</button>
+            <button type="button" class="btn ghost" data-del data-id="${a.id}">削除</button>
+          </div></td></tr>`).join("");
+        return `<section class="panel">
+          <h2>会議・議案（新規登録／CSV・Excelインポート対応）</h2>
+          <div class="toolbar">
+            <button type="button" class="btn" data-new>＋ 新規登録</button>
+            <button type="button" class="btn ghost" data-import="agenda">CSVインポート</button>
+            <button type="button" class="btn ghost" data-import-xlsx="agenda">エクセルインポート</button>
+            <input type="search" id="agendaSearch" placeholder="件名で検索" aria-label="議案検索" />
+            <select id="agendaFilter" aria-label="状態フィルタ"><option value="">全状態</option><option>下書き</option><option>提出済み</option><option>審議中</option><option>決議確定</option><option>取下げ</option></select>
+          </div>
+          <div style="overflow-x:auto"><table><thead><tr><th>件名</th><th>種別</th><th>機密</th><th>担当</th><th>期限</th><th>状態</th><th>操作</th></tr></thead><tbody>${rows}</tbody></table></div>
+          <p class="muted-small">新規登録・インポートした項目はこのモックアップ内（localStorage）に保存され、ダッシュボードのKPIへ即時反映されます。</p>
+        </section>`;
+      }
+      function bindAgenda() {
+        document.querySelector("[data-new]").addEventListener("click", newAgenda);
+        document.querySelectorAll("[data-import]").forEach((b) => b.addEventListener("click", () => handleImport(b.dataset.import)));
+        document.querySelectorAll("[data-import-xlsx]").forEach((b) => b.addEventListener("click", () => { document.getElementById("fileInput").accept = ".xlsx,.xls"; handleImport(b.dataset.importXlsx || "agenda"); }));
+        document.getElementById("agendaSearch").addEventListener("input", filterAgenda);
+        document.getElementById("agendaFilter").addEventListener("change", filterAgenda);
+        document.querySelectorAll("[data-status]").forEach((s) => s.addEventListener("change", (e) => { const a = S.agendas.find((x) => x.id === e.target.dataset.id); if (a) { a.status = e.target.value; log("agenda.status", a.id, "ok"); save(); render(); toast("状態を更新しました", "ok"); } }));
+        document.querySelectorAll("[data-detail]").forEach((b) => b.addEventListener("click", async () => { const a = S.agendas.find((x) => x.id === b.dataset.id); if (a) await showAgendaDetail(a); }));
+        document.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => { const a = S.agendas.find((x) => x.id === b.dataset.id); if (a && confirm(`議案「${a.title}」を削除しますか？`)) { S.agendas = S.agendas.filter((x) => x.id !== a.id); log("agenda.delete", a.id, "ok"); save(); render(); toast("削除しました", "ok"); } }));
+      }
+      function filterAgenda() {
+        const q = document.getElementById("agendaSearch").value.toLowerCase();
+        const st = document.getElementById("agendaFilter").value;
+        document.querySelectorAll("#view tbody tr").forEach((tr) => {
+          const t = tr.children[0].textContent.toLowerCase();
+          const s = tr.children[5].textContent.trim();
+          tr.style.display = t.includes(q) && (!st || s === st) ? "" : "none";
+        });
+      }
+      function agendaForm(a) {
+        a = a || {};
+        return `<div class="form-grid">
+          <label class="field full"><span>件名（必須）</span><input id="f_title" value="${esc(a.title || "")}" required /></label>
+          <label class="field"><span>種別</span><select id="f_type"><option>重要案件</option><option>経営方針</option><option>規程改定</option><option>資金調達</option><option>人事</option></select></label>
+          <label class="field"><span>機密区分</span><select id="f_class"><option>内部</option><option>秘</option><option>極秘</option></select></label>
+          <label class="field"><span>担当</span><input id="f_owner" value="${esc(a.owner || currentPersona().name.replace(/（.*/, ""))}" /></label>
+          <label class="field"><span>期限</span><input type="date" id="f_due" value="${esc(a.due || "")}" /></label>
+          <label class="field full"><span>概要</span><textarea id="f_summary" rows="2">${esc(a.summary || "")}</textarea></label>
+          <label class="field full"><span>資料・出典（AI草案の引用元・改行区切り）</span><textarea id="f_sources" rows="3">${esc(a.sources || "")}</textarea></label>
+          <label class="field full switch"><input type="checkbox" id="f_urgent" ${a.urgent ? "checked" : ""} /> 緊急上程</label>
+        </div>`;
+      }
+      async function newAgenda() {
+        const ok = await openModal("議案 新規登録", agendaForm(), { okLabel: "登録" });
+        if (!ok || !ok.submit) return;
+        const title = document.getElementById("f_title").value.trim();
+        if (!title) { toast("件名は必須です", "error"); return; }
+        S.agendas.unshift({ id: uid("ag"), title, type: document.getElementById("f_type").value, classification: document.getElementById("f_class").value, owner: document.getElementById("f_owner").value.trim() || "未設定", due: document.getElementById("f_due").value, status: "下書き", urgent: document.getElementById("f_urgent").checked, summary: document.getElementById("f_summary").value.trim(), sources: document.getElementById("f_sources").value.trim() });
+        log("agenda.create", title, "ok"); save(); render();
+        toast("議案を登録しました", "ok");
+      }
+      async function showAgendaDetail(a) {
+        await openModal(`議案詳細: ${esc(a.title)}`, `<p class="muted-small">種別: ${esc(a.type)} ／ 機密: ${esc(a.classification)} ／ 担当: ${esc(a.owner)} ／ 期限: ${esc(a.due || "—")} ／ 状態: ${esc(a.status)}</p><p><strong>概要:</strong><br>${esc(a.summary || "—")}</p><p><strong>資料・出典:</strong><br>${esc(a.sources || "なし")}</p>${a.sources ? `<p><span class="cite">出典あり</span> AI草案の生成に利用できます</p>` : `<p><span class="badge red">出典なし</span> AI設定が「出典必須」の場合、草案は生成できません</p>`}`, { okLabel: "閉じる" });
+      }
+
+      /* 指摘 */
+      function renderFinding() {
+        const rows = S.findings.map((f) => `<tr>
+          <td>${esc(f.title)}</td><td>${esc(f.severity)}</td><td>${esc(f.engagement)}</td><td>${esc(f.fact)}</td>
+          <td><span class="badge ${f.status === "終結" ? "green" : f.status === "再オープン" ? "red" : "gray"}">${esc(f.status)}</span></td>
+          <td><div class="row-actions">
+            <select aria-label="状態変更" data-status data-id="${f.id}">${["案","確定","回答待ち","是正中","終結","再オープン"].map((s) => `<option ${s === f.status ? "selected" : ""}>${s}</option>`).join("")}</select>
+            <button type="button" class="btn ghost" data-detail data-id="${f.id}">詳細</button>
+            <button type="button" class="btn ghost" data-del data-id="${f.id}">削除</button>
+          </div></td></tr>`).join("");
+        return `<section class="panel">
+          <h2>指摘・是正（新規登録／CSV・Excelインポート対応）</h2>
+          <div class="toolbar">
+            <button type="button" class="btn" data-new>＋ 新規登録</button>
+            <button type="button" class="btn ghost" data-import="finding">CSVインポート</button>
+            <button type="button" class="btn ghost" data-import-xlsx="finding">エクセルインポート</button>
+          </div>
+          <div style="overflow-x:auto"><table><thead><tr><th>指摘</th><th>重要度</th><th>監査</th><th>事実</th><th>状態</th><th>操作</th></tr></thead><tbody>${rows}</tbody></table></div>
+        </section>`;
+      }
+      function bindFinding() {
+        document.querySelector("[data-new]").addEventListener("click", newFinding);
+        document.querySelectorAll("[data-import]").forEach((b) => b.addEventListener("click", () => handleImport(b.dataset.import)));
+        document.querySelectorAll("[data-import-xlsx]").forEach((b) => b.addEventListener("click", () => handleImport("finding")));
+        document.querySelectorAll("[data-status]").forEach((s) => s.addEventListener("change", (e) => { const f = S.findings.find((x) => x.id === e.target.dataset.id); if (f) { f.status = e.target.value; log("finding.status", f.id, "ok"); save(); render(); toast("状態を更新しました", "ok"); } }));
+        document.querySelectorAll("[data-detail]").forEach((b) => b.addEventListener("click", async () => { const f = S.findings.find((x) => x.id === b.dataset.id); if (f) await openModal(`指摘詳細: ${esc(f.title)}`, `<p class="muted-small">重要度: ${esc(f.severity)} ／ 監査: ${esc(f.engagement)} ／ 状態: ${esc(f.status)}</p><p><strong>事実:</strong><br>${esc(f.fact || "—")}</p><p><strong>勧告:</strong><br>${esc(f.recommendation || "—")}</p>`, { okLabel: "閉じる" }); }));
+        document.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => { const f = S.findings.find((x) => x.id === b.dataset.id); if (f && confirm(`指摘「${f.title}」を削除しますか？`)) { S.findings = S.findings.filter((x) => x.id !== f.id); log("finding.delete", f.id, "ok"); save(); render(); toast("削除しました", "ok"); } }));
+      }
+      async function newFinding() {
+        const ok = await openModal("指摘 新規登録", `<div class="form-grid">
+          <label class="field full"><span>指摘名（必須）</span><input id="f_title" required /></label>
+          <label class="field"><span>重要度</span><select id="f_sev"><option>高</option><option selected>中</option><option>低</option></select></label>
+          <label class="field"><span>監査</span><input id="f_eng" value="デモ監査" /></label>
+          <label class="field full"><span>事実</span><textarea id="f_fact" rows="2"></textarea></label>
+          <label class="field full"><span>勧告</span><textarea id="f_rec" rows="2"></textarea></label>
+        </div>`, { okLabel: "登録" });
+        if (!ok || !ok.submit) return;
+        const title = document.getElementById("f_title").value.trim();
+        if (!title) { toast("指摘名は必須です", "error"); return; }
+        S.findings.unshift({ id: uid("f"), title, severity: document.getElementById("f_sev").value, engagement: document.getElementById("f_eng").value.trim() || "デモ監査", status: "案", fact: document.getElementById("f_fact").value.trim(), recommendation: document.getElementById("f_rec").value.trim() });
+        log("finding.create", title, "ok"); save(); render();
+        toast("指摘を登録しました", "ok");
+      }
+
+      /* AI */
+      function renderAI() {
+        const opts = S.agendas.map((a) => `<option value="${a.id}">${esc(a.title)}</option>`).join("");
+        const drafts = S.aiDrafts.map((d) => {
+          const ag = S.agendas.find((a) => a.id === d.agendaId);
+          return `<div class="ai-result"><p><strong>${esc(ag ? ag.title : d.agendaId)}</strong> <span class="badge ${d.status === "保存済み" ? "green" : d.status === "レビュー済み" ? "blue" : "gray"}">${esc(d.status)}</span> <span class="muted-small">${esc(d.model)}</span></p>
+          <pre style="white-space:pre-wrap;font-size:0.8rem">${esc(d.body)}</pre>
+          <p class="muted-small">出典: ${d.citations.map((c) => `<span class="cite">${esc(c)}</span>`).join(" ")}</p>
+          <div class="actions-row">
+            ${d.status === "レビュー済み" ? `<button type="button" class="btn ghost" data-save="${d.id}">保存</button>` : ""}
+            ${d.status === "保存済み" ? `<button type="button" class="btn ghost" data-share="${d.id}">共有</button>` : ""}
+          </div></div>`;
+        }).join("");
+        return `<section class="panel">
+          <h2>AI活用（草案生成・レビュー・保存・共有）</h2>
+          <div class="toolbar">
+            <label class="field"><span>対象議案</span><select id="aiTarget">${opts}</select></label>
+            <button type="button" class="btn" id="aiGenerate">草案を生成</button>
+            <button type="button" class="btn ghost" id="aiOpenSettings">AI設定</button>
+          </div>
+          <div id="aiError"></div>
+          <div id="aiResult"></div>
+          <h2>草案一覧</h2>
+          ${drafts || '<p class="muted-small">まだ草案がありません</p>'}
+        </section>`;
+      }
+      function bindAI() {
+        document.getElementById("aiGenerate").addEventListener("click", generateDraft);
+        document.getElementById("aiOpenSettings").addEventListener("click", openAISettings);
+        document.querySelectorAll("[data-save]").forEach((b) => b.addEventListener("click", () => { const d = S.aiDrafts.find((x) => x.id === b.dataset.save); if (d && d.status === "レビュー済み") { d.status = "保存済み"; log("ai.draft.save", d.id, "ok"); save(); render(); toast("保存しました（正式記録にはなりません）", "ok"); } }));
+        document.querySelectorAll("[data-share]").forEach((b) => b.addEventListener("click", () => { const d = S.aiDrafts.find((x) => x.id === b.dataset.share); if (d && d.status === "保存済み") { d.status = "共有済み"; log("ai.draft.share", d.id, "ok"); save(); render(); toast("共有しました（デモ）", "ok"); } }));
+      }
+      function generateDraft() {
+        const ag = S.agendas.find((a) => a.id === document.getElementById("aiTarget").value);
+        if (!ag) return;
+        const s = S.aiSettings;
+        const sources = (ag.sources || "").split(/\n+/).map((x) => x.trim()).filter(Boolean);
+        if (s.requireCitations && sources.length === 0) {
+          document.getElementById("aiError").innerHTML = `<div class="notice">AI設定が「出典必須」のため、出典（審議資料）がない議案は草案を生成できません。議案を編集して資料・出典を登録するか、AI設定を変更してください。</div>`;
+          document.getElementById("aiResult").innerHTML = "";
+          return;
+        }
+        const citations = sources.slice(0, 5);
+        const body = `論点整理（${ag.title}）:\n1. ${ag.summary || ag.title}（出典${citations.length ? "1" : "なし"}）\n${citations.map((c, i) => `${i + 2}. ${c}（出典${i + 1}）`).join("\n")}\n信頼限界: 本草案は人のレビューまで正式記録になりません。`;
+        document.getElementById("aiError").innerHTML = "";
+        document.getElementById("aiResult").innerHTML = `<div class="ai-result"><pre style="white-space:pre-wrap;font-size:0.85rem">${esc(body)}</pre><p>出典: ${citations.length ? citations.map((c) => `<span class="cite">${esc(c)}</span>`).join(" ") : `<span class="badge red">出典なし</span>`}</p>
+        <div class="actions-row"><button type="button" class="btn" id="aiReview">レビュー承認（${currentPersona().role === "admin" || currentPersona().role === "kansa_yaku" || currentPersona().role === "internal_auditor" ? "可能" : "要：管理者/監査役/内部監査"}）</button>
+        <button type="button" class="btn ghost" id="aiDiscard">破棄</button></div></div>`;
+        document.getElementById("aiReview").addEventListener("click", () => {
+          if (!["admin", "kansa_yaku", "internal_auditor"].includes(currentPersona().role)) { toast("このペルソナではレビューできません（AI設定: 人レビュー必須）", "error"); return; }
+          const id = uid("ai");
+          S.aiDrafts.unshift({ id, agendaId: ag.id, body, citations, status: s.requireHumanReview ? "レビュー済み" : "保存済み", model: s.model, createdAt: new Date().toLocaleString("ja-JP") });
+          log("ai.draft.review", id, "ok"); save(); render();
+          toast("レビュー承認しました", "ok");
+        });
+        document.getElementById("aiDiscard").addEventListener("click", () => { document.getElementById("aiResult").innerHTML = ""; toast("草案を破棄しました", "ok"); });
+      }
+      async function openAISettings() {
+        const s = S.aiSettings;
+        const ok = await openModal("AI設定", `<div class="form-grid">
+          <label class="field full"><span>利用モデル</span><select id="s_model"><option value="rule-based-demo" ${s.model === "rule-based-demo" ? "selected" : ""}>規則ベースデモ（外部送信なし）</option><option value="llm-future" ${s.model === "llm-future" ? "selected" : ""}>有料LLM（予定・未接続）</option></select></label>
+          <label class="field switch"><input type="checkbox" id="s_cite" ${s.requireCitations ? "checked" : ""} /> 出典必須（出典なしは生成拒否）</label>
+          <label class="field switch"><input type="checkbox" id="s_review" ${s.requireHumanReview ? "checked" : ""} /> 人レビュー必須</label>
+          <label class="field switch"><input type="checkbox" id="s_mask" ${s.maskConfidential ? "checked" : ""} /> 機密マスキング</label>
+          <label class="field"><span>保存上限（件）</span><input type="number" id="s_max" value="${s.maxDrafts}" min="1" max="100" /></label>
+        </div><p class="muted-small">AIは決議・監査判断を代替しません。保存・共有には出典と人レビューが必要です。</p>`, { okLabel: "保存" });
+        if (!ok || !ok.submit) return;
+        s.model = document.getElementById("s_model").value;
+        s.requireCitations = document.getElementById("s_cite").checked;
+        s.requireHumanReview = document.getElementById("s_review").checked;
+        s.maskConfidential = document.getElementById("s_mask").checked;
+        s.maxDrafts = Number(document.getElementById("s_max").value) || 20;
+        log("ai.settings.update", "", "ok"); save(); render();
+        toast("AI設定を保存しました", "ok");
+      }
+
+      /* システム設定 */
+      function renderSettings() {
+        return `<section class="panel">
+          <h2>システム設定（ユーザー・グループ・ロール）</h2>
+          <div class="tabs">
+            <button type="button" class="active" data-tab="users">ユーザー</button>
+            <button type="button" data-tab="groups">グループ</button>
+            <button type="button" data-tab="roles">ロール</button>
+          </div>
+          <div id="settingsBody"></div>
+        </section>`;
+      }
+      function bindSettings() {
+        document.querySelectorAll("[data-tab]").forEach((b) => b.addEventListener("click", () => { document.querySelectorAll("[data-tab]").forEach((x) => x.classList.remove("active")); b.classList.add("active"); renderSettingsTab(b.dataset.tab); }));
+        renderSettingsTab("users");
+      }
+      function renderSettingsTab(tab) {
+        const body = document.getElementById("settingsBody");
+        if (tab === "users") {
+          body.innerHTML = `<div class="toolbar" style="margin-top:0.8rem"><button type="button" class="btn" id="userNew">＋ ユーザー追加</button><button type="button" class="btn ghost" id="userImportCsv">CSVインポート</button><button type="button" class="btn ghost" id="userImportXlsx">エクセルインポート</button></div>
+          <div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>名前</th><th>メール</th><th>ロール</th><th>グループ</th><th>状態</th><th>操作</th></tr></thead><tbody>${S.users.map((u) => `<tr><td>${esc(u.id)}</td><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${esc(u.role)}</td><td>${esc(u.group)}</td><td>${u.active ? "有効" : "無効"}</td><td><div class="row-actions"><button type="button" class="btn ghost" data-edit="${u.id}">編集</button><button type="button" class="btn ghost" data-del="${u.id}">削除</button></div></td></tr>`).join("")}</tbody></table></div>`;
+          document.getElementById("userNew").addEventListener("click", userForm);
+          document.getElementById("userImportCsv").addEventListener("click", () => { document.getElementById("fileInput").accept = ".csv"; handleImport("user"); });
+          document.getElementById("userImportXlsx").addEventListener("click", () => { document.getElementById("fileInput").accept = ".xlsx,.xls"; handleImport("user"); });
+          document.querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => userForm(S.users.find((u) => u.id === b.dataset.edit))));
+          document.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => { const u = S.users.find((x) => x.id === b.dataset.del); if (u && confirm(`ユーザー「${u.name}」を削除しますか？`)) { S.users = S.users.filter((x) => x.id !== u.id); log("settings.user.delete", u.id, "ok"); save(); renderSettingsTab("users"); toast("削除しました", "ok"); } }));
+        } else if (tab === "groups") {
+          body.innerHTML = `<div class="toolbar" style="margin-top:0.8rem"><button type="button" class="btn" id="groupNew">＋ グループ追加</button></div>
+          <div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>名前</th><th>説明</th><th>メンバー</th><th>操作</th></tr></thead><tbody>${S.groups.map((g) => `<tr><td>${esc(g.id)}</td><td>${esc(g.name)}</td><td>${esc(g.description)}</td><td>${esc(g.members.join(", "))}</td><td><div class="row-actions"><button type="button" class="btn ghost" data-edit="${g.id}">編集</button><button type="button" class="btn ghost" data-del="${g.id}">削除</button></div></td></tr>`).join("")}</tbody></table></div>`;
+          document.getElementById("groupNew").addEventListener("click", () => groupForm());
+          document.querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => groupForm(S.groups.find((g) => g.id === b.dataset.edit))));
+          document.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => { const g = S.groups.find((x) => x.id === b.dataset.del); if (g && confirm(`グループ「${g.name}」を削除しますか？`)) { S.groups = S.groups.filter((x) => x.id !== g.id); log("settings.group.delete", g.id, "ok"); save(); renderSettingsTab("groups"); toast("削除しました", "ok"); } }));
+        } else {
+          body.innerHTML = `<div class="toolbar" style="margin-top:0.8rem"><button type="button" class="btn" id="roleNew">＋ ロール追加</button></div>
+          <div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>ロール名</th><th>権限</th><th>操作</th></tr></thead><tbody>${S.roles.map((r) => `<tr><td>${esc(r.id)}</td><td>${esc(r.name)}</td><td class="muted-small">${esc(r.permissions.join(", "))}</td><td><div class="row-actions"><button type="button" class="btn ghost" data-edit="${r.id}">編集</button><button type="button" class="btn ghost" data-del="${r.id}">削除</button></div></td></tr>`).join("")}</tbody></table></div>`;
+          document.getElementById("roleNew").addEventListener("click", () => roleForm());
+          document.querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => roleForm(S.roles.find((r) => r.id === b.dataset.edit))));
+          document.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => { const r = S.roles.find((x) => x.id === b.dataset.del); if (r && confirm(`ロール「${r.name}」を削除しますか？`)) { S.roles = S.roles.filter((x) => x.id !== r.id); log("settings.role.delete", r.id, "ok"); save(); renderSettingsTab("roles"); toast("削除しました", "ok"); } }));
+        }
+      }
+      async function userForm(u) {
+        u = u || {};
+        const ok = await openModal(u.id ? "ユーザー編集" : "ユーザー追加", `<div class="form-grid">
+          <label class="field"><span>名前（必須）</span><input id="f_name" value="${esc(u.name || "")}" required /></label>
+          <label class="field"><span>メール</span><input type="email" id="f_email" value="${esc(u.email || "")}" /></label>
+          <label class="field"><span>ロール</span><select id="f_role">${S.roles.map((r) => `<option ${r.name === u.role ? "selected" : ""}>${esc(r.name)}</option>`).join("")}</select></label>
+          <label class="field"><span>グループ</span><select id="f_group">${S.groups.map((g) => `<option ${g.name === u.group ? "selected" : ""}>${esc(g.name)}</option>`).join("")}</select></label>
+        </div>`, { okLabel: "保存" });
+        if (!ok || !ok.submit) return;
+        const name = document.getElementById("f_name").value.trim();
+        if (!name) { toast("名前は必須です", "error"); return; }
+        const data = { name, email: document.getElementById("f_email").value.trim(), role: document.getElementById("f_role").value, group: document.getElementById("f_group").value };
+        if (u.id) { Object.assign(S.users.find((x) => x.id === u.id), data); log("settings.user.update", u.id, "ok"); }
+        else { S.users.push({ id: uid("u"), ...data, active: true }); log("settings.user.create", name, "ok"); }
+        save(); renderSettingsTab("users"); toast("保存しました", "ok");
+      }
+      async function groupForm(g) {
+        g = g || {};
+        const ok = await openModal(g.id ? "グループ編集" : "グループ追加", `<div class="form-grid">
+          <label class="field full"><span>グループ名（必須）</span><input id="f_name" value="${esc(g.name || "")}" required /></label>
+          <label class="field full"><span>説明</span><input id="f_desc" value="${esc(g.description || "")}" /></label>
+          <label class="field full"><span>メンバー（カンマ区切り）</span><input id="f_members" value="${esc((g.members || []).join(", "))}" /></label>
+        </div>`, { okLabel: "保存" });
+        if (!ok || !ok.submit) return;
+        const name = document.getElementById("f_name").value.trim();
+        if (!name) { toast("グループ名は必須です", "error"); return; }
+        const members = document.getElementById("f_members").value.split(/[,、]/).map((s) => s.trim()).filter(Boolean);
+        const data = { name, description: document.getElementById("f_desc").value.trim(), members };
+        if (g.id) { Object.assign(S.groups.find((x) => x.id === g.id), data); log("settings.group.update", g.id, "ok"); }
+        else { S.groups.push({ id: uid("g"), ...data }); log("settings.group.create", name, "ok"); }
+        save(); renderSettingsTab("groups"); toast("保存しました", "ok");
+      }
+      async function roleForm(r) {
+        r = r || { permissions: [] };
+        const perms = ROLE_PERMISSIONS.map((p) => `<label><input type="checkbox" value="${p}" ${r.permissions.includes(p) ? "checked" : ""} /> ${esc(p)}</label>`).join("");
+        const ok = await openModal(r.id ? "ロール編集" : "ロール追加", `<div class="form-grid">
+          <label class="field full"><span>ロール名（必須）</span><input id="f_name" value="${esc(r.name || "")}" required /></label>
+          <div class="full"><span class="muted-small">権限</span><div class="role-perms">${perms}</div></div>
+        </div>`, { okLabel: "保存" });
+        if (!ok || !ok.submit) return;
+        const name = document.getElementById("f_name").value.trim();
+        if (!name) { toast("ロール名は必須です", "error"); return; }
+        const permissions = Array.from(document.querySelectorAll(".role-perms input:checked")).map((x) => x.value);
+        const data = { name, permissions };
+        if (r.id) { Object.assign(S.roles.find((x) => x.id === r.id), data); log("settings.role.update", r.id, "ok"); }
+        else { S.roles.push({ id: uid("r"), ...data }); log("settings.role.create", name, "ok"); }
+        save(); renderSettingsTab("roles"); toast("保存しました", "ok");
+      }
+
+      /* 監査ログ */
+      function renderAuditLog() {
+        const rows = S.auditLog.map((e) => `<tr><td>${esc(e.at)}</td><td>${esc(e.actor)}</td><td>${esc(e.action)}</td><td>${esc(e.resource)}</td><td>${esc(e.result)}</td></tr>`).join("");
+        return `<section class="panel">
+          <h2>監査ログ（追記型・更新/削除不可）</h2>
+          <div class="toolbar"><button type="button" class="btn ghost" id="chainVerify">チェーン全体を検証</button></div>
+          <div style="overflow-x:auto"><table><thead><tr><th>日時</th><th>主体</th><th>操作</th><th>対象</th><th>結果</th></tr></thead><tbody>${rows}</tbody></table></div>
+          <p class="muted-small">登録・状態変更・削除・AI操作・設定変更のすべてがここに記録されます（デモ）。</p>
+        </section>`;
+      }
+
+      /* 初期化 */
+      document.getElementById("persona").addEventListener("change", (e) => { persona = e.target.value; viewName = "dashboard"; render(); });
+      render();
+    </script>
   </body>
 </html>

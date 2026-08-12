@@ -2,7 +2,7 @@ import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["node_modules/**", "web/dist/**", "dist/**", ".wrangler/**", "*.html", "migrations/**", "seed/seed.sql", "worker-configuration.d.ts"] },
+  { ignores: ["node_modules/**", "web/dist/**", "dist/**", "webui-dist/**", "webui/assets/vendor/**", ".wrangler/**", "*.html", "migrations/**", "seed/seed.sql", "worker-configuration.d.ts"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
