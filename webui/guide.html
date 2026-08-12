@@ -10,7 +10,7 @@
     <nav class="topnav" aria-label="メインナビゲーション">
       <span class="brand"><span class="mark" aria-hidden="true"></span>みらい取締役会・監査統合基盤</span>
       <a class="nav-link" href="./index.html">ホーム</a>
-      <a class="nav-link" href="./mockup.html">モックアップPart4</a>
+      <a class="nav-link" href="./mockup.html">モックアップ</a>
       <a class="nav-link current" href="./guide.html" aria-current="page">デモガイド</a>
       <a class="nav-link" href="./requirements.html">要件対応</a>
       <a class="nav-link" href="./api.html">API概要</a>
@@ -22,6 +22,15 @@
       <section class="panel">
         <h1>デモガイド</h1>
         <p>実装済みMVPアプリ（<a href="https://mirai-board-audit-governance-preview.kensan1969.workers.dev" target="_blank" rel="noopener">Preview</a>）とモックアップを一巡するための操作手順です。データはすべて架空のデモデータです。</p>
+        <h2>0. モックアップの基本操作（WebUI）</h2>
+        <ol>
+          <li>「モックアップ」を開くと、経営ペルソナのトップとして<b>統制ダッシュボード</b>が表示されます（KPIは登録データから自動計算）。</li>
+          <li>ペルソナ（経営／事務局／内部監査／監査役／システム管理者）を切り替えると、利用できる画面が変わります。</li>
+          <li>「会議・議案」「指摘・是正」では<b>＋新規登録</b>ボタンをクリックすると登録フォームが表示されます。</li>
+          <li><b>CSVインポート／エクセルインポート</b>ボタンで一括登録できます（1行目をヘッダーとして解釈し、確認画面から一括登録）。</li>
+          <li>「システム設定」（システム管理者）で<b>ユーザー・グループ・ロールの追加・編集・削除</b>ができます。</li>
+          <li>「AI活用」で草案生成・レビュー・保存・共有ができ、「AI設定」でモデル・出典必須・人レビュー必須・機密マスキング等を変更できます。</li>
+        </ol>
         <h2>1. ログイン</h2>
         <ol>
           <li>MVPアプリを開き、ログイン画面からデモユーザーを選択（例: 取締役「佐藤美咲」、監査役「中村健一」、内部監査「山田拓也」、事務局「高橋一樹」）。</li>
@@ -49,7 +58,7 @@
           <li>CSVエクスポート・検索・KPIダッシュボード</li>
         </ul>
         <h2>5. モックアップの見方</h2>
-        <p><a href="./mockup.html">モックアップPart4</a>は役割別画面・例外状態の確認用です。無反応のボタンは「表示例」で、実際の操作はMVPアプリで行えます。</p>
+        <p><a href="./mockup.html">モックアップ</a>は役割別画面・例外状態・新規登録・インポート・システム設定・AI活用の確認用です。オリジナルのPart4モックアップ（表示例中心）はモックアップ画面左下「オリジナルPart4を開く」から確認できます。</p>
       </section>
     </div>
     <footer>みらい取締役会・監査統合基盤 WebUI ／ デモ用・架空データ</footer>

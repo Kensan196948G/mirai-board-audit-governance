@@ -10,7 +10,7 @@
     <nav class="topnav" aria-label="メインナビゲーション">
       <span class="brand"><span class="mark" aria-hidden="true"></span>みらい取締役会・監査統合基盤</span>
       <a class="nav-link" href="./index.html">ホーム</a>
-      <a class="nav-link" href="./mockup.html">モックアップPart4</a>
+      <a class="nav-link" href="./mockup.html">モックアップ</a>
       <a class="nav-link" href="./guide.html">デモガイド</a>
       <a class="nav-link current" href="./requirements.html" aria-current="page">要件対応</a>
       <a class="nav-link" href="./api.html">API概要</a>
@@ -22,6 +22,7 @@
       <section class="panel">
         <h1>要件対応表（MVP実装状態）</h1>
         <p>要件定義書・詳細仕様設計書のFR/AC/NFRに対する実装状態です。「実装済み」はテスト・API・画面で確認済み。「バックログ」は本番化フェーズの課題です。</p>
+        <div class="notice green">WebUIのモックアップ（拡張デモ）には、新規登録（クリックでフォーム表示）・CSV/Excelインポート・システム設定（ユーザー/グループ/ロールCRUD）・AI活用＋AI設定を追加実装しています。サーバーAPI化はバックログです。</div>
         <h2>FR（機能要件）</h2>
         <div style="overflow-x:auto">
           <table>
@@ -38,10 +39,12 @@
               <tr><td>FR-09</td><td>手続・調書・レビュー（作成者≠レビュー者）</td><td><span class="badge green">実装済み</span></td><td>procedures / workpapers / reviews</td></tr>
               <tr><td>FR-10</td><td>指摘・回答・残余リスク・是正・再検証・再オープン</td><td><span class="badge green">実装済み</span></td><td>findings / management-responses / retests</td></tr>
               <tr><td>FR-11</td><td>通知・受領・再通知</td><td><span class="badge green">実装済み</span></td><td>notifications（実メールはバックログ）</td></tr>
-              <tr><td>FR-12</td><td>検索・ダッシュボード・CSV・証拠パッケージ</td><td><span class="badge green">実装済み</span></td><td>search / dashboard/kpis / exports / evidence-packages</td></tr>
+              <tr><td>FR-12</td><td>検索・ダッシュボード・CSV出力・証拠パッケージ</td><td><span class="badge green">実装済み</span></td><td>search / dashboard/kpis / exports / evidence-packages</td></tr>
+              <tr><td>FR-12b</td><td>CSV・Excelインポート（WebUIデモ）</td><td><span class="badge green">デモ実装</span></td><td>モックアップ内 一括登録（サーバーAPIはバックログ）</td></tr>
               <tr><td>FR-13</td><td>保持・法的保全・廃棄制御</td><td><span class="badge green">実装済み</span></td><td>retention-rules / legal-holds / disposals</td></tr>
               <tr><td>FR-14</td><td>役割・職務分離競合</td><td><span class="badge green">実装済み</span></td><td>permissions / admin/sod-conflicts</td></tr>
-              <tr><td>FR-15</td><td>AI草案（出典必須・人レビュー）</td><td><span class="badge green">実装済み</span></td><td>/api/ai/drafts（規則ベースデモ）</td></tr>
+              <tr><td>FR-14b</td><td>システム設定（ユーザー・グループ・ロールCRUD）</td><td><span class="badge green">デモ実装</span></td><td>モックアップ「システム設定」（API化はバックログ）</td></tr>
+              <tr><td>FR-15</td><td>AI草案（出典必須・人レビュー）＋AI設定</td><td><span class="badge green">実装済み</span></td><td>/api/ai/drafts＋モックアップAI設定（規則ベースデモ）</td></tr>
             </tbody>
           </table>
         </div>

@@ -38,8 +38,10 @@ npm run seed
 
 ## 5. WebUI（ドキュメント・モックアップ配信）
 
-- 公開URL: https://mbag.mirai-dx-platform.com/（ルートはモックアップPart4を表示）
+- 公開URL: https://mbag.mirai-dx-platform.com/（ルートはモックアップを表示）
 - 一覧: https://mbag.mirai-dx-platform.com/index.html
 - デモガイド: https://mbag.mirai-dx-platform.com/guide.html
 - 要件対応表: https://mbag.mirai-dx-platform.com/requirements.html
 - ローカル: http://192.168.0.185:8090/
+
+モックアップは拡張デモとして、経営ペルソナのトップに統制ダッシュボード、会議・議案と指摘・是正に「＋新規登録」フォームとCSV/Excelインポート、システム管理者に「システム設定」（ユーザー・グループ・ロールの追加・編集・削除）、全員に「AI活用」（草案生成・レビュー・保存・共有＋AI設定）を提供します。データはブラウザのlocalStorageに保存され、リセットボタンで初期デモデータへ戻せます。

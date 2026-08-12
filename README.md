@@ -51,9 +51,10 @@ npm run build
 
 提示されたHTMLファイル（企画書・要件定義書・詳細仕様設計書・モックアップPart4）を、元の内容のまま配信するWebUIを用意しています。systemdサービスとして常時起動しています。
 
-- 公開URL: **https://mbag.mirai-dx-platform.com/**（Cloudflare Tunnel経由・ルートはモックアップPart4を表示）
+- 公開URL: **https://mbag.mirai-dx-platform.com/**（Cloudflare Tunnel経由・ルートはモックアップを表示）
 - ローカルURL: http://192.168.0.185:8090/ ／ 一覧（ランチャー）: http://192.168.0.185:8090/index.html
 - 追加ページ: デモガイド / 要件対応表 / API概要 / 変更履歴（`/guide.html` `/requirements.html` `/api.html` `/history.html`）
+- モックアップ（拡張デモ）: 経営トップ=統制ダッシュボード／新規登録（クリックでフォーム）／CSV・Excelインポート／システム設定（ユーザー・グループ・ロールCRUD）／AI活用＋AI設定
 - 実体: [webui/](./webui)（ページ群）＋ [scripts/webui-server.mjs](./scripts/webui-server.mjs)（Node製HTTPサーバー）＋ [scripts/build-webui.mjs](./scripts/build-webui.mjs)（Pages/Worker配信バンドル生成）
 - systemdユニット: [deploy/mirai-board-webui.service](./deploy/mirai-board-webui.service)（WebUI本体）＋ [deploy/mbag-webui-tunnel.service](./deploy/mbag-webui-tunnel.service)（Cloudflare Tunnel、`sudo systemctl status mbag-webui-tunnel` で確認）
 

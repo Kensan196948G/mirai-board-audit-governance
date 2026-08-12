@@ -10,7 +10,7 @@
     <nav class="topnav" aria-label="メインナビゲーション">
       <span class="brand"><span class="mark" aria-hidden="true"></span>みらい取締役会・監査統合基盤</span>
       <a class="nav-link" href="./index.html">ホーム</a>
-      <a class="nav-link" href="./mockup.html">モックアップPart4</a>
+      <a class="nav-link" href="./mockup.html">モックアップ</a>
       <a class="nav-link" href="./guide.html">デモガイド</a>
       <a class="nav-link" href="./requirements.html">要件対応</a>
       <a class="nav-link current" href="./api.html" aria-current="page">API概要</a>
@@ -48,6 +48,12 @@
           <li>ABAC: 議案の閲覧・審議・議決・通知はCOI判定の操作別制御を参照</li>
           <li>職務分離: 調書の作成者≠レビュー者、申請者≠承認者、回答者≠再検証者（サーバ強制）</li>
           <li>認可拒否は404（存在非露出）。全エラーに相関ID</li>
+        </ul>
+        <h2>WebUIデモ機能（サーバーAPI化はバックログ）</h2>
+        <ul>
+          <li>CSV / Excelインポート（議案・指摘・ユーザーの一括登録）: モックアップ内でクライアント処理</li>
+          <li>システム設定（ユーザー・グループ・ロールの追加・編集・削除）: モックアップ内でlocalStorage永続化</li>
+          <li>AI設定（モデル選択・出典必須・人レビュー必須・機密マスキング・保存上限）: モックアップ内で適用</li>
         </ul>
       </section>
     </div>
