@@ -1,0 +1,4 @@
+# ローカル開発用の秘密値（実値はコミットしない）
+# 初回 npm run dev で scripts/dev-vars.mjs が自動生成します
+SESSION_SECRET=replace-with-a-random-string
+SEED_KEY=replace-with-a-random-string

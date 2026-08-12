@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>企画書｜みらい取締役会・監査統合基盤</title>
+  <style>
+    :root{--navy:#17324d;--blue:#2563a6;--pale:#eef5fb;--line:#cbd8e4;--ink:#17212b;--muted:#526579;--warn:#fff8df}*{box-sizing:border-box}body{margin:0;color:var(--ink);font-family:"Yu Gothic UI","Meiryo",sans-serif;line-height:1.75;background:#f5f7fa}header{padding:40px max(5vw,28px);color:#fff;background:linear-gradient(125deg,#102a43,#2563a6)}header p{margin:.4rem 0 0}main{max-width:1180px;margin:auto;padding:28px}section{background:#fff;margin:0 0 20px;padding:24px;border:1px solid var(--line);border-radius:12px}h1{margin:0;font-size:2rem}h2{color:var(--navy);border-left:6px solid var(--blue);padding-left:12px}h3{color:var(--blue)}table{width:100%;border-collapse:collapse;margin:12px 0}th,td{border:1px solid var(--line);padding:10px;vertical-align:top}th{background:var(--pale);text-align:left}nav a{color:#fff;margin-right:18px}a{color:#165a96}.note{background:var(--warn);border-left:5px solid #d4a017;padding:12px}.tag{display:inline-block;background:var(--pale);border:1px solid var(--line);padding:2px 8px;border-radius:99px;margin:2px}footer{padding:24px;text-align:center;color:var(--muted)}@media(max-width:720px){main{padding:14px}section{padding:16px;overflow:auto}nav a{display:inline-block;margin:6px 12px 0 0}table{min-width:680px}}@media print{body{background:#fff}section{break-inside:avoid}nav{display:none}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>みらい取締役会・監査統合基盤</h1>
+  <p>企画書｜Mirai Board &amp; Audit Governance Hub｜文書版 0.3</p>
+  <nav aria-label="関連文書"><a href="企画書.html">企画書</a><a href="要件定義書.html">要件定義書</a><a href="詳細仕様設計書.html">詳細仕様設計書</a><a href="Mirai-Board-Audit-Governance-MockUp-WebUI/みらい取締役会・監査統合基盤モックアップPart3.html">Part3 MockUp</a></nav>
+</header>
+<main>
+<section><h2>1. 企画要旨</h2><p>取締役会の招集・議案受付から審議、決議、議事録、履行確認までと、内部監査の監査ユニバース・リスク評価から年度計画、監査手続、調書、指摘、経営回答、是正、独立再検証までを、機密区分と証跡を保った一つの追跡面で可視化する。</p><p class="note"><strong>基本原則:</strong> 既存の会計・契約・文書管理等の正本は置換しない。本基盤は参照、審査、統制、証跡のハブであり、決議、監査意見、重要度、残余リスク受容、是正完了等の最終判断は、適用規程に基づく権限者が行う。</p></section>
+
+<section><h2>2. 背景と解決する課題</h2><table><thead><tr><th>現状</th><th>経営・監査上の課題</th><th>対応方針</th></tr></thead><tbody><tr><td>招集、出欠、議案、添付、議事録、履行タスクが分散</td><td>誰が、どの規程・資料版・出席資格に基づき判断したか再現しにくい</td><td>会議・議案ID、規程版、出席イベント、資格判定、決議、議事録を関連付ける</td></tr><tr><td>利益相反申告と忌避が個別運用</td><td>議案単位の議決資格、閲覧、審議参加の境界が曖昧</td><td>申告、判定、解除、再申告と、操作別の制御ルールを記録する</td></tr><tr><td>監査計画・調書・指摘・是正が分断</td><td>リスク根拠、レビュー責任、残余リスク、再発を追跡しにくい</td><td>監査対象から再検証・再オープンまでを別状態で管理する</td></tr><tr><td>正本は外部保管庫にあり版が変わり得る</td><td>過去の結論時点の根拠一式を第三者が再現できない</td><td>Evidence Manifestで正本ID、版、ハッシュ、引用、固定時刻を封緘する</td></tr><tr><td>AI要約の利用が統制されていない</td><td>幻覚、機密漏えい、出典なき判断代替</td><td>許可資料、マスキング、出典、人レビュー、保存禁止条件を強制する</td></tr></tbody></table></section>
+
+<section><h2>3. 対象と役割境界</h2><table><thead><tr><th>主体</th><th>主な責任</th><th>禁止・分離の要点</th></tr></thead><tbody><tr><td>取締役</td><td>対象議案の審議、議決、意見、条件の確定</td><td>監査役の権限と分離し、議案単位の資格・利益相反判定に従う</td></tr><tr><td>監査役等</td><td>会議への出席、意見陳述、監督上の確認</td><td>取締役会の議決権は付与しない。機関設計・規程に応じ権限を設定する</td></tr><tr><td>会議体事務局</td><td>招集、完全性確認、審議資料パッケージ固定、議事録案、履行管理</td><td>自ら申請した管理変更の承認、取締役本人の議決・記名、システム設定を代行しない</td></tr><tr><td>内部監査</td><td>リスク評価、計画、手続、調書、指摘、報告、再検証</td><td>作成者の自己レビューを禁止し、報告承認・被監査部門のリスク受容と分離する</td></tr><tr><td>主管・被監査部門・是正責任者</td><td>議案提出、資料回答、経営回答、是正証憑提出</td><td>自己提出した証憑の独立再検証を行わない</td></tr><tr><td>法務・記録管理・Security</td><td>規程、機密、保持、法的保全、例外、安全統制</td><td>内部監査はこれらの運用主体ではなく独立評価者とする</td></tr><tr><td>システム管理者・監査ログ閲覧者</td><td>設定運用／証跡検証</td><td>設定申請、承認、業務操作、証跡検証を競合マトリクスで分離する</td></tr></tbody></table><p class="note">会社機関設計、定款、取締役会規程、監査役監査規程、内部監査規程により法的・業務的要件が変わるため、導入時に専門家確認を行い、適用ルールを版管理する。監査役会設置会社を採用する場合、サンプル構成も法令上の人数・社外要件と整合させる。</p></section>
+
+<section><h2>4. 目的・提供価値・KPI</h2><table><thead><tr><th>KPI</th><th>MVP導入6か月目標</th><th>測定定義</th></tr></thead><tbody><tr><td>議案受付から資料固定までの中央値</td><td>基準期間比30%短縮</td><td>同一会議体・議案種別で比較。取下げを除外し、状態変更ログから算出</td></tr><tr><td>決議アクション期限内完了率</td><td>95%以上</td><td>期限内に独立確認済となった件数／期限到来件数</td></tr><tr><td>証憑付き是正・再検証率</td><td>100%</td><td>終結指摘のうち証拠Manifestと再検証記録を持つ件数</td></tr><tr><td>重大な権限逸脱</td><td>0件</td><td>本番アクセスログ、権限試験、インシデントで確認</td></tr><tr><td>結論根拠の第三者再現成功率</td><td>100%</td><td>抽出した決議・監査結論をManifestから再現できた件数</td></tr><tr><td>AI草案の有効出典付与率</td><td>100%</td><td>保存・共有されたAI草案の全主張に到達可能な引用がある割合</td></tr></tbody></table></section>
+
+<section><h2>5. スコープと段階境界</h2><table><thead><tr><th>段階</th><th>対象</th><th>判定目的</th></tr></thead><tbody><tr><td>Standalone MockUp</td><td>役割別画面、正常・例外状態、用語、情報構造、操作意図、数値・時系列、要件対応度</td><td>業務矛盾と不足状態を発見する。API、DB、実認証、永続化は要求しない</td></tr><tr><td>PoC</td><td>代表2シナリオ、サーバ側認可、資格・定足数、結論Evidence Manifest、職務分離</td><td>重大な技術・統制リスクが成立するか実証する</td></tr><tr><td>MVP</td><td>永続化、認証認可、監査証跡、連携、保持、運用、受入試験</td><td>限定会議体・監査テーマで業務利用可能か判定する</td></tr></tbody></table><p><strong>PoC代表シナリオ:</strong> ①議案提出→招集・出欠→審議資料パッケージ固定→利益相反→正式議決→結論Manifest→議事録→履行、②監査ユニバース・リスク評価→年度計画→手続・調書→指摘→経営回答→是正証憑→独立再検証・再オープン。</p></section>
+
+<section><h2>6. 対象外</h2><p>電子署名認証局、会計仕訳、契約・人事マスタの正本更新、法的助言の自動化、監査人の専門判断の代替、AIによる自動議決・自動処分、全社データウェアハウス構築。システムは登録済みルールに基づく成立判定支援と操作制御を行うが、適用規程の選択と最終的な法的判断は権限者・専門家が担う。</p></section>
+
+<section><h2>7. 推進体制</h2><table><thead><tr><th>役割</th><th>責任</th></tr></thead><tbody><tr><td>スポンサー（経営）</td><td>方針、予算、対象会議体、Go/No-Go</td></tr><tr><td>プロダクト責任者（経営企画）</td><td>優先順位、受入、KPI、文書間トレーサビリティ</td></tr><tr><td>会議体・法務責任者</td><td>機関設計、適用規程、定足数、議決・議事録ルール</td></tr><tr><td>内部監査責任者</td><td>監査方法論、品質レビュー、独立性</td></tr><tr><td>記録管理・Security・IT</td><td>保持・法的保全、安全設計、運用、インシデント対応</td></tr><tr><td>利用部門代表</td><td>実帳票による業務検証、教育、改善提案</td></tr></tbody></table></section>
+
+<section><h2>8. ロードマップ</h2><ol><li><strong>Part3凍結:</strong> 機関構成、要件ID、正式議決、結論Manifest、署名資格、管理職務分離、代表2シナリオを補正し、以後の広範なMockUp反復を終了。</li><li><strong>PoC（0–2か月）:</strong> 代表2シナリオ、認可、定足数、結論Manifest、職務分離、失敗系を実証。</li><li><strong>MVP（3–4か月）:</strong> 永続化、通知、正本連携、監査ログ、保持・法的保全、運用機能を実装。</li><li><strong>限定導入（5か月）:</strong> 並行運用、侵入試験、証跡復元、災害復旧、UAT。</li><li><strong>評価（6か月）:</strong> KPI測定、残余リスク承認、対象会議体・監査テーマ拡大を判断。</li></ol></section>
+
+<section><h2>9. 主要リスクと対策</h2><table><thead><tr><th>リスク</th><th>対策</th></tr></thead><tbody><tr><td>役割・法的権限の混同</td><td>ガバナンス構成と規程版を登録し、取締役、監査役等、内部監査、事務局を分離</td></tr><tr><td>証拠改変・版混同</td><td>Evidence Manifest、全文ハッシュ、固定時刻、署名、追記型監査ログ</td></tr><tr><td>利益相反制御の過不足</td><td>議案・操作別の資格マトリクス、判定理由、解除、事後検証</td></tr><tr><td>監査独立性の毀損</td><td>作成・レビュー・承認・是正・再検証の競合検知と代償統制</td></tr><tr><td>保存満了後の不適切廃棄</td><td>保存起算、法的保全、延長、二者承認、廃棄証明、正本側照合</td></tr><tr><td>AI誤要約・機密漏えい</td><td>許可モデル、入力マスキング、到達可能な引用、人レビュー、出典不足時の保存禁止</td></tr></tbody></table></section>
+
+<section><h2>10. Go / No-Go判定</h2><table><thead><tr><th>段階</th><th>Go条件</th><th>No-Go / 保留条件</th></tr></thead><tbody><tr><td>PoC開始</td><td>対象会議体・監査テーマ、適用規程、役割、正本、代表シナリオが確定</td><td>監査役等の権限、決議成立ルール、監査レビュー責任が未確定</td></tr><tr><td>MVP開始</td><td>PoCで認可、定足数、Manifest、職務分離、例外系を再現できる</td><td>権限外データ漏えい、根拠版再現不能、自己承認が残る</td></tr><tr><td>限定本番</td><td>重大・高のセキュリティ欠陥0件、復旧・保持・監査ログ・UAT合格</td><td>監査ログ欠損、法的保全不能、運用責任者不在、復旧目標未達</td></tr></tbody></table></section>
+<section><h2>11. Part3凍結条件</h2><ol><li>機関設計と役員構成が適用法令・定款・規程に整合する。</li><li>FR-01〜15、AC-01〜09、NFR-01〜06が正しいID・名称・対応度で表示される。</li><li>取締役会と内部監査の代表シナリオが開始から終端まで画面状態として追える。</li><li>人数、日付、分母・分子、版、全文ハッシュ、署名対象が一致する。</li><li>役割別の禁止操作が無効化され、表示専用・疑似動作・PoC予定が識別できる。</li><li>ブラウザへAPIキー等の秘密情報を入力させない。</li><li>「部分表示」「例外説明のみ」「PoC予定」「MVP予定」を過大評価しない。</li></ol><p class="note">本書の「Part3凍結準備版」は、上記条件をPart3へ反映するための基準であり、Part3がすでに全条件を満たすことを意味しない。</p></section>
+<section><h2>12. 改訂履歴</h2><table><thead><tr><th>版</th><th>日付</th><th>変更概要</th><th>状態</th></tr></thead><tbody><tr><td>0.1</td><td>2026-08-10</td><td>初版</td><td>旧版</td></tr><tr><td>0.2</td><td>2026-08-11</td><td>Part2評価を反映し、役割・状態・証拠・保持を拡張</td><td>旧版</td></tr><tr><td>0.3</td><td>2026-08-11</td><td>Part3評価、凍結条件、正式議決、結論Manifest、機関構成・職務分離を反映</td><td>Part3凍結準備</td></tr></tbody></table></section>
+</main>
+<footer>更新日: 2026-08-11｜文書版: 0.3｜Part3 MockUp凍結準備版</footer>
+</body>
+</html>

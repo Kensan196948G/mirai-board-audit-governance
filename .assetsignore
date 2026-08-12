@@ -1,0 +1,6 @@
+*.map
+*.md
+.gitignore
+.assetsignore
+node_modules/
+.wrangler/

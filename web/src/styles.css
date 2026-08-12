@@ -1,0 +1,6 @@
+:root {
+  color-scheme: light;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #eef1f5; color: #1a2433; }

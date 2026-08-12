@@ -1,0 +1,47 @@
+{
+  "name": "mirai-board-audit-governance",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "みらい取締役会・監査統合基盤 MVP（Cloudflare Workers + D1 + React/Vite）",
+  "scripts": {
+    "dev": "node scripts/dev-vars.mjs && concurrently -k -n web,server -c blue,green \"npm:dev:web\" \"npm:dev:server\"",
+    "dev:web": "vite build --watch -c web/vite.config.ts",
+    "dev:server": "node scripts/dev-server.ts",
+    "build": "npm run build:web && npm run typecheck",
+    "build:web": "vite build -c web/vite.config.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p web/tsconfig.json --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "test": "node --test \"tests/**/*.test.ts\"",
+    "test:unit": "node --test \"tests/unit/**/*.test.ts\"",
+    "test:integration": "node --test \"tests/integration/**/*.test.ts\"",
+    "seed": "node scripts/seed.mjs",
+    "db:migrate:local": "wrangler d1 migrations apply mirai-board-audit-governance-db --local",
+    "deploy:preview": "npm run build && wrangler deploy",
+    "types": "wrangler types"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.0",
+    "@hono/zod-validator": "^0.9.0",
+    "hono": "^4.13.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.2.0",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.67.0",
+    "vite": "^7.2.0",
+    "wrangler": "^4.121.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}
