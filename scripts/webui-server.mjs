@@ -72,10 +72,12 @@ const server = createServer(async (req, res) => {
   }
   if (filePath && body) {
     const type = MIME[extname(filePath).toLowerCase()] ?? "application/octet-stream";
+    const cacheControl = type.startsWith("text/html") ? "no-store, max-age=0" : "no-cache";
     res.writeHead(200, {
       "content-type": type,
       "content-length": body.length,
-      "cache-control": "no-cache",
+      "cache-control": cacheControl,
+      "expires": "0",
       "x-content-type-options": "nosniff",
     });
     res.end(method === "HEAD" ? undefined : body);
