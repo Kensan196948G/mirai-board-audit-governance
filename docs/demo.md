@@ -38,8 +38,7 @@ npm run seed
 
 ## 5. WebUI（ドキュメント・モックアップ配信）
 
-- 公開URL: https://mbag.mirai-dx-platform.com/（ルートはモックアップを表示）
-- 一覧: https://mbag.mirai-dx-platform.com/index.html
+- 公開URL: https://mbag.mirai-dx-platform.com/（ルートのみ。index.htmlは廃止しルートへリダイレクト）
 - デモガイド: https://mbag.mirai-dx-platform.com/guide.html
 - 要件対応表: https://mbag.mirai-dx-platform.com/requirements.html
 - ローカル: http://192.168.0.185:8090/
