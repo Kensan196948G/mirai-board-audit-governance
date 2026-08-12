@@ -51,7 +51,8 @@ npm run build
 
 提示されたHTMLファイル（企画書・要件定義書・詳細仕様設計書・モックアップPart4）を、元の内容のまま配信するWebUIを用意しています。systemdサービスとして常時起動しています。
 
-- 公開URL: **https://mbag.mirai-dx-platform.com/**（Cloudflare Tunnel経由・ルートのみ。index.htmlは廃止し、`/index.html` はルートへリダイレクト）
+- 公開URL: **https://mbag.mirai-dx-platform.com/**（Cloudflare Tunnel経由・ルートはモックアップを表示）
+- 説明・一覧ページ: https://mbag.mirai-dx-platform.com/index.html
 - ローカルURL: http://192.168.0.185:8090/
 - 追加ページ: デモガイド / 要件対応表 / API概要 / 変更履歴（`/guide.html` `/requirements.html` `/api.html` `/history.html`）
 - モックアップ（拡張デモ）: 経営トップ=統制ダッシュボード／新規登録（クリックでフォーム）／CSV・Excelインポート／システム設定（ユーザー・グループ・ロールCRUD）／AI活用＋AI設定
