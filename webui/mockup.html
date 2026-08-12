@@ -222,7 +222,20 @@
       function load() {
         try {
           const raw = localStorage.getItem(LS_KEY);
-          if (raw) return JSON.parse(raw);
+          if (raw) {
+            const def = seedState();
+            const saved = JSON.parse(raw);
+            const merged = { ...def, ...saved };
+            // 旧バージョンの保存データには新しい設定キーが無いため、デフォルトとマージする
+            for (const k of Object.keys(def)) {
+              if (Array.isArray(def[k])) {
+                if (!Array.isArray(saved[k])) merged[k] = def[k];
+              } else if (def[k] && typeof def[k] === "object" && saved[k] && typeof saved[k] === "object") {
+                merged[k] = { ...def[k], ...saved[k] };
+              }
+            }
+            return merged;
+          }
         } catch (e) { /* ignore */ }
         return seedState();
       }
@@ -410,7 +423,7 @@
         { id: "dashboard", label: "統制ダッシュボード", roles: ["director", "secretariat", "internal_auditor", "kansa_yaku", "admin"] },
         { id: "agenda", label: "会議・議案", roles: ["director", "secretariat", "kansa_yaku", "admin"] },
         { id: "finding", label: "指摘・是正", roles: ["internal_auditor", "admin"] },
-        { id: "ai", label: "AI活用", roles: ["director", "secretariat", "internal_auditor", "admin"] },
+        { id: "ai", label: "AI活用", roles: ["director", "secretariat", "internal_auditor", "kansa_yaku", "admin"] },
         { id: "settings", label: "システム設定", roles: ["admin"] },
         { id: "auditlog", label: "監査ログ", roles: ["kansa_yaku", "admin"] },
       ];
@@ -630,7 +643,7 @@
       }
       function renderAI() {
         const opts = S.agendas.map((a) => `<option value="${a.id}">${esc(a.title)}</option>`).join("");
-        const ls = S.aiDraftListSettings;
+        const ls = S.aiDraftListSettings || { perPage: 10, order: "desc", showCitations: true, statusFilter: "" };
         let list = S.aiDrafts.slice();
         if (ls.statusFilter) list = list.filter((d) => d.status === ls.statusFilter);
         list.sort((a, b) => (ls.order === "asc" ? a.createdAt.localeCompare(b.createdAt) : b.createdAt.localeCompare(a.createdAt)));
@@ -734,7 +747,7 @@
         toast("草案一覧の設定を保存しました", "ok");
       }
       function renderAISettingsPanel(mount) {
-        const s = S.aiSettings;
+        const s = S.aiSettings || seedState().aiSettings;
         mount.innerHTML = `<div class="ai-settings-panel">
           <div class="section-head"><h3>AI設定</h3></div>
           <div class="form-grid">
