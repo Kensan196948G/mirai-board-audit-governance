@@ -42,7 +42,8 @@ const server = createServer(async (req, res) => {
 
   let filePath;
   if (pathname === "/" || pathname === "/index.html") {
-    filePath = join(WEBUI_DIR, "index.html");
+    // ルート表示はモックアップビューア（オリジナルHTMLをiframe表示）。一覧は /index.html
+    filePath = pathname === "/" ? join(WEBUI_DIR, "mockup.html") : join(WEBUI_DIR, "index.html");
   } else if (pathname === "/mockup.html") {
     filePath = join(WEBUI_DIR, "mockup.html");
   } else {
