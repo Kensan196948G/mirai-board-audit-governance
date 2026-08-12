@@ -34,13 +34,6 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
   const pathname = decodeURIComponent(url.pathname);
 
-  // index.html は廃止し、ルートURLのみとする
-  if (pathname === "/index.html") {
-    res.writeHead(301, { location: "/", "content-type": "text/plain; charset=utf-8" });
-    res.end("301 Moved Permanently");
-    return;
-  }
-
   if (method !== "GET" && method !== "HEAD") {
     res.writeHead(405, { "content-type": "text/plain; charset=utf-8", allow: "GET, HEAD" });
     res.end("405 Method Not Allowed");
@@ -51,6 +44,9 @@ const server = createServer(async (req, res) => {
   if (pathname === "/") {
     // ルート表示はモックアップ（拡張デモ）
     candidates = [join(WEBUI_DIR, "mockup.html")];
+  } else if (pathname === "/index.html") {
+    // 説明文付きランディングページ
+    candidates = [join(WEBUI_DIR, "index.html")];
   } else if (pathname === "/mockup.html") {
     candidates = [join(WEBUI_DIR, "mockup.html")];
   } else {
