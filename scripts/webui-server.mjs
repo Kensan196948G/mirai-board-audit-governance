@@ -40,23 +40,34 @@ const server = createServer(async (req, res) => {
     return;
   }
 
-  let filePath;
+  let candidates = [];
   if (pathname === "/" || pathname === "/index.html") {
     // ルート表示はモックアップビューア（オリジナルHTMLをiframe表示）。一覧は /index.html
-    filePath = pathname === "/" ? join(WEBUI_DIR, "mockup.html") : join(WEBUI_DIR, "index.html");
+    candidates = [pathname === "/" ? join(WEBUI_DIR, "mockup.html") : join(WEBUI_DIR, "index.html")];
   } else if (pathname === "/mockup.html") {
-    filePath = join(WEBUI_DIR, "mockup.html");
+    candidates = [join(WEBUI_DIR, "mockup.html")];
   } else {
-    filePath = safeResolve(ROOT, pathname.replace(/^\/+/, ""));
+    const rel = pathname.replace(/^\/+/, "");
+    candidates = [safeResolve(WEBUI_DIR, rel), safeResolve(ROOT, rel)].filter(Boolean);
   }
-  if (!filePath) {
+  if (candidates.length === 0) {
     res.writeHead(403, { "content-type": "text/plain; charset=utf-8" });
     res.end("403 Forbidden");
     return;
   }
 
-  try {
-    const body = await readFile(filePath);
+  let body = null;
+  let filePath = null;
+  for (const candidate of candidates) {
+    try {
+      body = await readFile(candidate);
+      filePath = candidate;
+      break;
+    } catch {
+      /* next candidate */
+    }
+  }
+  if (filePath && body) {
     const type = MIME[extname(filePath).toLowerCase()] ?? "application/octet-stream";
     res.writeHead(200, {
       "content-type": type,
@@ -65,7 +76,7 @@ const server = createServer(async (req, res) => {
       "x-content-type-options": "nosniff",
     });
     res.end(method === "HEAD" ? undefined : body);
-  } catch {
+  } else {
     res.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
     res.end("404 Not Found");
   }

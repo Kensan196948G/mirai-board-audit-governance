@@ -1,0 +1,18 @@
+[Unit]
+Description=Cloudflare Tunnel for mbag.mirai-dx-platform.com (Mirai Board WebUI)
+Documentation=https://github.com/Kensan196948G/mirai-board-audit-governance
+After=network-online.target mirai-board-webui.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=kensan
+Group=kensan
+ExecStart=/usr/local/bin/cloudflared tunnel --no-autoupdate --config /home/kensan/.cloudflared/mbag-webui-config.yml run
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

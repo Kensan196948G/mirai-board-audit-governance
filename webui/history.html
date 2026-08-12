@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>変更履歴｜みらい取締役会・監査統合基盤 WebUI</title>
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body>
+    <nav class="topnav" aria-label="メインナビゲーション">
+      <span class="brand"><span class="mark" aria-hidden="true"></span>みらい取締役会・監査統合基盤</span>
+      <a class="nav-link" href="./index.html">ホーム</a>
+      <a class="nav-link" href="./mockup.html">モックアップPart4</a>
+      <a class="nav-link" href="./guide.html">デモガイド</a>
+      <a class="nav-link" href="./requirements.html">要件対応</a>
+      <a class="nav-link" href="./api.html">API概要</a>
+      <a class="nav-link current" href="./history.html" aria-current="page">変更履歴</a>
+      <span class="spacer"></span>
+      <span class="url-badge">https://mbag.mirai-dx-platform.com</span>
+    </nav>
+    <div class="wrap">
+      <section class="panel">
+        <h1>変更履歴</h1>
+        <table>
+          <thead><tr><th>日付</th><th>内容</th><th>PR / commit</th></tr></thead>
+          <tbody>
+            <tr><td>2026-08-12</td><td>WebUI拡充: ランディング・デモガイド・要件対応・API概要・変更履歴を追加し、mbag.mirai-dx-platform.com で公開</td><td>本リリース</td></tr>
+            <tr><td>2026-08-12</td><td>WebUIをsystemdサービス化（IP:8090）し、ルートURLでモックアップPart4を直接表示</td><td>PR #3〜#5</td></tr>
+            <tr><td>2026-08-12</td><td>MVP完成: バックエンド全API・フロント全画面・テスト・CI・Previewデプロイ。seed冪等性を修正</td><td>PR #1〜#6</td></tr>
+            <tr><td>2026-08-11</td><td>文書版0.3・モックアップPart4作成（企画・要件・詳細仕様）</td><td>提供HTML</td></tr>
+          </tbody>
+        </table>
+        <h2>現在の稼働環境</h2>
+        <ul>
+          <li>WebUI（本ドメイン）: https://mbag.mirai-dx-platform.com</li>
+          <li>WebUI（ローカルsystemd）: http://192.168.0.185:8090/</li>
+          <li>MVPアプリ（Preview）: https://mirai-board-audit-governance-preview.kensan1969.workers.dev</li>
+          <li>リポジトリ: https://github.com/Kensan196948G/mirai-board-audit-governance</li>
+        </ul>
+      </section>
+    </div>
+    <footer>みらい取締役会・監査統合基盤 WebUI ／ デモ用・架空データ</footer>
+  </body>
+</html>

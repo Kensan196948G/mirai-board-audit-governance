@@ -10,6 +10,7 @@
     "dev:server": "node scripts/dev-server.ts",
     "build": "npm run build:web && npm run typecheck",
     "build:web": "vite build -c web/vite.config.ts",
+    "build:webui": "node scripts/build-webui.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p web/tsconfig.json --noEmit",
     "lint": "eslint . --max-warnings 0",
     "test": "node --test \"tests/**/*.test.ts\"",

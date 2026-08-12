@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>デモガイド｜みらい取締役会・監査統合基盤 WebUI</title>
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body>
+    <nav class="topnav" aria-label="メインナビゲーション">
+      <span class="brand"><span class="mark" aria-hidden="true"></span>みらい取締役会・監査統合基盤</span>
+      <a class="nav-link" href="./index.html">ホーム</a>
+      <a class="nav-link" href="./mockup.html">モックアップPart4</a>
+      <a class="nav-link current" href="./guide.html" aria-current="page">デモガイド</a>
+      <a class="nav-link" href="./requirements.html">要件対応</a>
+      <a class="nav-link" href="./api.html">API概要</a>
+      <a class="nav-link" href="./history.html">変更履歴</a>
+      <span class="spacer"></span>
+      <span class="url-badge">https://mbag.mirai-dx-platform.com</span>
+    </nav>
+    <div class="wrap">
+      <section class="panel">
+        <h1>デモガイド</h1>
+        <p>実装済みMVPアプリ（<a href="https://mirai-board-audit-governance-preview.kensan1969.workers.dev" target="_blank" rel="noopener">Preview</a>）とモックアップを一巡するための操作手順です。データはすべて架空のデモデータです。</p>
+        <h2>1. ログイン</h2>
+        <ol>
+          <li>MVPアプリを開き、ログイン画面からデモユーザーを選択（例: 取締役「佐藤美咲」、監査役「中村健一」、内部監査「山田拓也」、事務局「高橋一樹」）。</li>
+          <li>監査役には議決権がなく、権限外の操作はサーバ側で拒否（404非露出）されることを確認できます。</li>
+        </ol>
+        <h2>2. 取締役会シナリオ</h2>
+        <ol>
+          <li>「議案・審議」→「子会社みらいエナジー株式会社 株式譲渡契約の締結」を開く。</li>
+          <li>利益相反申告・判定、審議資料パッケージ固定、資格・定足数の再計算を実行。</li>
+          <li>開催中の第12回取締役会で正式議決（条件付賛成・反対を含む）を入力。</li>
+          <li>「決議を確定」でEvidence Manifestが原子的に封緘され、証拠ビューアでハッシュ再検証できる。</li>
+          <li>決議から履行タスクを生成し、担当者・独立確認者の操作（完了は確認者のみ）を確認。</li>
+        </ol>
+        <h2>3. 内部監査シナリオ</h2>
+        <ol>
+          <li>「監査ワークベンチ」でユニバース・リスク評価・年度計画・個別監査を確認。</li>
+          <li>調書を作成し、作成者本人のレビュー依頼が409で拒否されること（職務分離）を確認。</li>
+          <li>指摘を確定（Manifest封緘）→ 経営回答 → 是正証憑 → 独立再検証（終結／再オープン）。</li>
+        </ol>
+        <h2>4. 統制シナリオ</h2>
+        <ul>
+          <li>監査ログのチェーン検証（全イベントのハッシュ・欠番なし）</li>
+          <li>法的保全中の廃棄実行が409で拒否されること</li>
+          <li>AI草案: 出典（審議資料パッケージ）がないと422、レビュー前保存は409</li>
+          <li>CSVエクスポート・検索・KPIダッシュボード</li>
+        </ul>
+        <h2>5. モックアップの見方</h2>
+        <p><a href="./mockup.html">モックアップPart4</a>は役割別画面・例外状態の確認用です。無反応のボタンは「表示例」で、実際の操作はMVPアプリで行えます。</p>
+      </section>
+    </div>
+    <footer>みらい取締役会・監査統合基盤 WebUI ／ デモ用・架空データ</footer>
+  </body>
+</html>
