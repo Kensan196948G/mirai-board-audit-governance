@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>要件対応表｜みらい取締役会・監査統合基盤 WebUI</title>
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body>
+    <nav class="topnav" aria-label="メインナビゲーション">
+      <span class="brand"><span class="mark" aria-hidden="true"></span>みらい取締役会・監査統合基盤</span>
+      <a class="nav-link" href="./index.html">ホーム</a>
+      <a class="nav-link" href="./mockup.html">モックアップPart4</a>
+      <a class="nav-link" href="./guide.html">デモガイド</a>
+      <a class="nav-link current" href="./requirements.html" aria-current="page">要件対応</a>
+      <a class="nav-link" href="./api.html">API概要</a>
+      <a class="nav-link" href="./history.html">変更履歴</a>
+      <span class="spacer"></span>
+      <span class="url-badge">https://mbag.mirai-dx-platform.com</span>
+    </nav>
+    <div class="wrap">
+      <section class="panel">
+        <h1>要件対応表（MVP実装状態）</h1>
+        <p>要件定義書・詳細仕様設計書のFR/AC/NFRに対する実装状態です。「実装済み」はテスト・API・画面で確認済み。「バックログ」は本番化フェーズの課題です。</p>
+        <h2>FR（機能要件）</h2>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>ID</th><th>要件</th><th>状態</th><th>根拠API</th></tr></thead>
+            <tbody>
+              <tr><td>FR-01</td><td>議案の作成・提出・差戻し・取下げ・再上程</td><td><span class="badge green">実装済み</span></td><td>/api/agenda-items + submit/return/withdraw/resubmit</td></tr>
+              <tr><td>FR-02</td><td>招集・出欠イベント</td><td><span class="badge green">実装済み</span></td><td>/api/meetings + convocations + attendance-events</td></tr>
+              <tr><td>FR-03</td><td>利益相反の申告・判定・操作別制御</td><td><span class="badge green">実装済み</span></td><td>/api/agenda-items/:id/conflicts, /api/conflicts/:id/determinations</td></tr>
+              <tr><td>FR-04</td><td>審議資料パッケージと結論Evidence Manifest</td><td><span class="badge green">実装済み</span></td><td>deliberation-packages / evidence_manifests</td></tr>
+              <tr><td>FR-05</td><td>正式議決と定足数</td><td><span class="badge green">実装済み</span></td><td>votes / decisions / eligibility</td></tr>
+              <tr><td>FR-06</td><td>議事録版・二重記名拒否・再記名</td><td><span class="badge green">実装済み</span></td><td>minutes versions / signoffs</td></tr>
+              <tr><td>FR-07</td><td>決議から履行タスク</td><td><span class="badge green">実装済み</span></td><td>/api/decisions/:id/actions</td></tr>
+              <tr><td>FR-08</td><td>監査ユニバース・リスク評価・年度計画・個別監査</td><td><span class="badge green">実装済み</span></td><td>audit-universes / risk-assessments / annual-plans / engagements</td></tr>
+              <tr><td>FR-09</td><td>手続・調書・レビュー（作成者≠レビュー者）</td><td><span class="badge green">実装済み</span></td><td>procedures / workpapers / reviews</td></tr>
+              <tr><td>FR-10</td><td>指摘・回答・残余リスク・是正・再検証・再オープン</td><td><span class="badge green">実装済み</span></td><td>findings / management-responses / retests</td></tr>
+              <tr><td>FR-11</td><td>通知・受領・再通知</td><td><span class="badge green">実装済み</span></td><td>notifications（実メールはバックログ）</td></tr>
+              <tr><td>FR-12</td><td>検索・ダッシュボード・CSV・証拠パッケージ</td><td><span class="badge green">実装済み</span></td><td>search / dashboard/kpis / exports / evidence-packages</td></tr>
+              <tr><td>FR-13</td><td>保持・法的保全・廃棄制御</td><td><span class="badge green">実装済み</span></td><td>retention-rules / legal-holds / disposals</td></tr>
+              <tr><td>FR-14</td><td>役割・職務分離競合</td><td><span class="badge green">実装済み</span></td><td>permissions / admin/sod-conflicts</td></tr>
+              <tr><td>FR-15</td><td>AI草案（出典必須・人レビュー）</td><td><span class="badge green">実装済み</span></td><td>/api/ai/drafts（規則ベースデモ）</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h2>AC（受入基準）</h2>
+        <table>
+          <thead><tr><th>ID</th><th>基準</th><th>状態</th></tr></thead>
+          <tbody>
+            <tr><td>AC-01</td><td>代表シナリオの開始〜終端</td><td><span class="badge green">実装済み</span></td></tr>
+            <tr><td>AC-02</td><td>認可・存在非露出・水平権限</td><td><span class="badge green">実装済み</span></td></tr>
+            <tr><td>AC-03</td><td>Manifest固定・再現</td><td><span class="badge green">実装済み</span></td></tr>
+            <tr><td>AC-04</td><td>復旧・連携断（PoC予定）</td><td><span class="badge gray">バックログ</span></td></tr>
+            <tr><td>AC-05</td><td>AI出典・保存禁止</td><td><span class="badge green">実装済み</span></td></tr>
+            <tr><td>AC-06</td><td>監査ログ・エクスポート記録</td><td><span class="badge green">実装済み</span></td></tr>
+            <tr><td>AC-07</td><td>職務分離・二重記名</td><td><span class="badge green">実装済み</span></td></tr>
+            <tr><td>AC-08</td><td>法的保全〜廃棄</td><td><span class="badge green">実装済み</span></td></tr>
+            <tr><td>AC-09</td><td>資格・定足数・集計</td><td><span class="badge green">実装済み</span></td></tr>
+          </tbody>
+        </table>
+        <h2>NFR（非機能要件）</h2>
+        <table>
+          <thead><tr><th>ID</th><th>要件</th><th>状態</th><th>備考</th></tr></thead>
+          <tbody>
+            <tr><td>NFR-01</td><td>可用性・復旧（RTO/RPO）</td><td><span class="badge gray">バックログ</span></td><td>本番運用フェーズ</td></tr>
+            <tr><td>NFR-02</td><td>性能（p95 2秒/検索3秒）</td><td><span class="badge gray">バックログ</span></td><td>負荷試験</td></tr>
+            <tr><td>NFR-03</td><td>セキュリティ試験</td><td><span class="badge gray">バックログ</span></td><td>SAST/DAST</td></tr>
+            <tr><td>NFR-04</td><td>アクセシビリティ・レスポンシブ</td><td><span class="badge green">実装済み</span></td><td>MVP画面・WebUI</td></tr>
+            <tr><td>NFR-05</td><td>監視・ログ・トレース</td><td><span class="badge gray">一部</span></td><td>observability有効、アラート未設定</td></tr>
+            <tr><td>NFR-06</td><td>Manifest再現・署名・欠番検証</td><td><span class="badge green">実装済み</span></td><td>verify-chain / manifests verify</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+    <footer>みらい取締役会・監査統合基盤 WebUI ／ デモ用・架空データ</footer>
+  </body>
+</html>

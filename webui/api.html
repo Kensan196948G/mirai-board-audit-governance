@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API概要｜みらい取締役会・監査統合基盤 WebUI</title>
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body>
+    <nav class="topnav" aria-label="メインナビゲーション">
+      <span class="brand"><span class="mark" aria-hidden="true"></span>みらい取締役会・監査統合基盤</span>
+      <a class="nav-link" href="./index.html">ホーム</a>
+      <a class="nav-link" href="./mockup.html">モックアップPart4</a>
+      <a class="nav-link" href="./guide.html">デモガイド</a>
+      <a class="nav-link" href="./requirements.html">要件対応</a>
+      <a class="nav-link current" href="./api.html" aria-current="page">API概要</a>
+      <a class="nav-link" href="./history.html">変更履歴</a>
+      <span class="spacer"></span>
+      <span class="url-badge">https://mbag.mirai-dx-platform.com</span>
+    </nav>
+    <div class="wrap">
+      <section class="panel">
+        <h1>API概要（MVP実装）</h1>
+        <p>実装済みMVPアプリのAPIは <code>https://mirai-board-audit-governance-preview.kensan1969.workers.dev/api</code> で動作します。詳細契約は <a href="https://github.com/Kensan196948G/mirai-board-audit-governance/blob/main/docs/api-contract.md" target="_blank" rel="noopener">docs/api-contract.md</a>。</p>
+        <h2>エンドポイント一覧（主要）</h2>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>カテゴリ</th><th>エンドポイント</th><th>内容</th></tr></thead>
+            <tbody>
+              <tr><td>認証</td><td>POST /api/auth/login, GET /api/auth/me</td><td>デモログイン（HMACセッション）</td></tr>
+              <tr><td>会議</td><td>/api/meetings, convocations, attendance-events</td><td>招集・出欠イベント</td></tr>
+              <tr><td>議案</td><td>/api/agenda-items（CRUD＋状態遷移・COI・パッケージ・資格・議決・決議）</td><td>取締役会フロー一式</td></tr>
+              <tr><td>議事録</td><td>/api/meetings/:id/minutes/versions, /api/minutes/:versionId/signoffs</td><td>版管理・二重記名拒否</td></tr>
+              <tr><td>履行</td><td>/api/decisions/:id/actions, /api/actions/:id/events</td><td>タスク生成・独立確認</td></tr>
+              <tr><td>監査</td><td>/api/audit-universes, risk-assessments, annual-plans, engagements, procedures, workpapers, reviews, findings</td><td>内部監査フロー一式（SoD強制）</td></tr>
+              <tr><td>証跡</td><td>/api/manifests（一覧・詳細・verify）, /api/evidence-packages/:id</td><td>Evidence Manifest・印刷用HTML</td></tr>
+              <tr><td>監査ログ</td><td>/api/audit-events, /api/audit-events/verify-chain</td><td>追記型チェーン・検証</td></tr>
+              <tr><td>検索・KPI</td><td>/api/search, /api/dashboard/kpis</td><td>権限対応検索・指標</td></tr>
+              <tr><td>保持</td><td>/api/retention-rules, legal-holds, disposals</td><td>法的保全・廃棄制御</td></tr>
+              <tr><td>AI</td><td>/api/ai/drafts（生成・レビュー・保存・共有）</td><td>出典必須・人レビュー</td></tr>
+              <tr><td>CSV</td><td>/api/exports/agenda-items.csv ほか</td><td>権限対応エクスポート</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h2>権限モデル</h2>
+        <ul>
+          <li>RBAC: director / kansa_yaku / secretariat / internal_auditor / internal_audit_manager / business_owner / legal / records / admin / audit_log_viewer</li>
+          <li>ABAC: 議案の閲覧・審議・議決・通知はCOI判定の操作別制御を参照</li>
+          <li>職務分離: 調書の作成者≠レビュー者、申請者≠承認者、回答者≠再検証者（サーバ強制）</li>
+          <li>認可拒否は404（存在非露出）。全エラーに相関ID</li>
+        </ul>
+      </section>
+    </div>
+    <footer>みらい取締役会・監査統合基盤 WebUI ／ デモ用・架空データ</footer>
+  </body>
+</html>

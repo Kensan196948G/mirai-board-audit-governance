@@ -4,6 +4,7 @@ node_modules/
 # build output
 dist/
 web/dist/
+webui-dist/
 .wrangler/
 
 # local env & secrets

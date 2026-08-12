@@ -4,51 +4,93 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>みらい取締役会・監査統合基盤 WebUI</title>
-    <style>
-      :root {
-        font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-        color: #1a2433;
-        background: #eef1f5;
-      }
-      * { box-sizing: border-box; }
-      body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
-      main { width: min(720px, 100%); background: #fff; border: 1px solid #e3e8ef; border-radius: 14px; padding: 2rem; }
-      header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem; }
-      .mark { width: 40px; height: 40px; border-radius: 10px; background: #e08a2b; flex-shrink: 0; }
-      h1 { font-size: 1.2rem; margin: 0; }
-      p.sub { color: #667085; font-size: 0.85rem; margin: 0.25rem 0 1.25rem; }
-      ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
-      li { border: 1px solid #e3e8ef; border-radius: 10px; overflow: hidden; }
-      a { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.9rem 1.1rem; color: #1a2433; text-decoration: none; }
-      a:hover { background: #f8fafb; }
-      a strong { display: block; font-size: 0.95rem; }
-      a small { color: #667085; font-size: 0.75rem; }
-      .arrow { color: #e08a2b; font-size: 1.2rem; }
-      .note { margin-top: 1.25rem; color: #667085; font-size: 0.75rem; }
-    </style>
+    <meta name="description" content="みらい取締役会・監査統合基盤の企画・要件・設計・モックアップ・デモをまとめたWebUI" />
+    <link rel="stylesheet" href="./assets/styles.css" />
   </head>
   <body>
-    <main>
-      <header>
-        <span class="mark" aria-hidden="true"></span>
+    <nav class="topnav" aria-label="メインナビゲーション">
+      <span class="brand"><span class="mark" aria-hidden="true"></span>みらい取締役会・監査統合基盤</span>
+      <a class="nav-link current" href="./index.html" aria-current="page">ホーム</a>
+      <a class="nav-link" href="./mockup.html">モックアップPart4</a>
+      <a class="nav-link" href="./guide.html">デモガイド</a>
+      <a class="nav-link" href="./requirements.html">要件対応</a>
+      <a class="nav-link" href="./api.html">API概要</a>
+      <a class="nav-link" href="./history.html">変更履歴</a>
+      <span class="spacer"></span>
+      <span class="url-badge">https://mbag.mirai-dx-platform.com</span>
+    </nav>
+
+    <div class="wrap">
+      <section class="hero">
         <h1>みらい取締役会・監査統合基盤 WebUI</h1>
-      </header>
-      <p class="sub">企画書・要件定義書・詳細仕様設計書・モックアップ（Part4）を、提示されたHTMLファイルの内容のまま表示します。</p>
-      <ul>
-        <li>
-          <a href="./%E4%BC%81%E7%94%BB%E6%9B%B8.html"><span><strong>企画書</strong><small>みらい取締役会・監査統合基盤｜文書版 0.3</small></span><span class="arrow" aria-hidden="true">→</span></a>
-        </li>
-        <li>
-          <a href="./%E8%A6%81%E4%BB%B6%E5%AE%9A%E7%BE%A9%E6%9B%B8.html"><span><strong>要件定義書</strong><small>FR-01〜15 / BR-01〜10 / 非機能要件</small></span><span class="arrow" aria-hidden="true">→</span></a>
-        </li>
-        <li>
-          <a href="./%E8%A9%B3%E7%B4%B0%E4%BB%95%E6%A7%98%E8%A8%AD%E8%A8%88%E6%9B%B8.html"><span><strong>詳細仕様設計書</strong><small>データモデル・API・画面・状態遷移</small></span><span class="arrow" aria-hidden="true">→</span></a>
-        </li>
-        <li>
-          <a href="./mockup.html"><span><strong>モックアップ Part4</strong><small>役割別画面・ダミーデータ・例外状態（操作可能な表示）</small></span><span class="arrow" aria-hidden="true">→</span></a>
-        </li>
-      </ul>
-      <p class="note">この画面は上記4点を開くためのランチャーです。各HTMLファイルは元の内容を改変せず配信しています。</p>
-    </main>
+        <p>取締役会プロセスと内部監査プロセスを、機密区分と証跡を保った一つの追跡面で可視化する統制・証跡ハブ。</p>
+        <p>企画書・要件定義書・詳細仕様設計書・モックアップPart4は、提示されたHTMLをそのまま表示します（デモ用の架空データ）。</p>
+        <div class="links">
+          <a class="btn" href="./mockup.html">モックアップPart4を開く</a>
+          <a class="btn ghost" href="https://mirai-board-audit-governance-preview.kensan1969.workers.dev" target="_blank" rel="noopener">実装済みMVPアプリを開く</a>
+        </div>
+      </section>
+
+      <div class="grid">
+        <a class="card" href="./%E4%BC%81%E7%94%BB%E6%9B%B8.html">
+          <h2>企画書</h2>
+          <p>目的・背景・KPI・スコープ・ロードマップ・Go/No-Go判定（文書版 0.3）</p>
+          <span class="go">開く →</span>
+        </a>
+        <a class="card" href="./%E8%A6%81%E4%BB%B6%E5%AE%9A%E7%BE%A9%E6%9B%B8.html">
+          <h2>要件定義書</h2>
+          <p>利用者・業務フロー・機能要件FR-01〜15・業務ルールBR-01〜10・非機能要件</p>
+          <span class="go">開く →</span>
+        </a>
+        <a class="card" href="./%E8%A9%B3%E7%B4%B0%E4%BB%95%E6%A7%98%E8%A8%AD%E8%A8%88%E6%9B%B8.html">
+          <h2>詳細仕様設計書</h2>
+          <p>状態遷移・データモデル・Evidence Manifest・API仕様・画面仕様・テスト計画</p>
+          <span class="go">開く →</span>
+        </a>
+        <a class="card badge-new" href="./mockup.html">
+          <h2>モックアップ Part4</h2>
+          <p>役割別画面・ダミーデータ・例外状態（操作可能な表示）</p>
+          <span class="go">開く →</span>
+        </a>
+        <a class="card badge-new" href="./guide.html">
+          <h2>デモガイド</h2>
+          <p>取締役会・内部監査の代表シナリオを一巡する操作手順</p>
+          <span class="go">開く →</span>
+        </a>
+        <a class="card badge-new" href="./requirements.html">
+          <h2>要件対応表</h2>
+          <p>FR / AC / NFR の実装状態・根拠API・テスト（実装済み／バックログ）</p>
+          <span class="go">開く →</span>
+        </a>
+        <a class="card badge-new" href="./api.html">
+          <h2>API概要</h2>
+          <p>認証・議案・決議・監査・証跡・検索のエンドポイント一覧と権限モデル</p>
+          <span class="go">開く →</span>
+        </a>
+        <a class="card badge-new" href="./history.html">
+          <h2>変更履歴</h2>
+          <p>開発フェーズ・PR・マージ・Previewデプロイの記録</p>
+          <span class="go">開く →</span>
+        </a>
+        <a class="card" href="https://mirai-board-audit-governance-preview.kensan1969.workers.dev" target="_blank" rel="noopener">
+          <h2>実装済みMVPアプリ</h2>
+          <p>D1実データで動作するWebアプリ（デモログイン・RBAC・監査ログ・Evidence Manifest）</p>
+          <span class="go">開く（別タブ）→</span>
+        </a>
+        <a class="card" href="https://github.com/Kensan196948G/mirai-board-audit-governance" target="_blank" rel="noopener">
+          <h2>GitHubリポジトリ</h2>
+          <p>ソースコード・テスト・CI・バックログ（private）</p>
+          <span class="go">開く（別タブ）→</span>
+        </a>
+      </div>
+
+      <div class="notice green" style="margin-top:1rem">
+        すべてのカード・ナビゲーションは実際のリンクです。モックアップ内の一部ボタンは「表示例」として無反応に設計されています（詳細はモックアップ画面の注記を参照）。
+      </div>
+    </div>
+
+    <footer>
+      みらい取締役会・監査統合基盤 WebUI ／ ドメイン: mbag.mirai-dx-platform.com ／ デモ用・架空データ
+    </footer>
   </body>
 </html>

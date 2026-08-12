@@ -64,6 +64,7 @@
 - 2026-08-12: Phase 2/3/4 完了（バックエンド全API・seed・テスト21件、フロント全画面・ビルド成功）。Phase 5 進行中。
 - 2026-08-12: Phase 5〜8 完了。Previewデプロイ・E2E全チェック成功、PR #1 をCI成功後に自動マージ。main = 4b858ed。
 - 2026-08-12: 再評価（第2回）完了。WebUI（IP:8090 + systemd）追加、seed再実行の冪等性を修正しテスト23件へ拡充。全PR（#1〜#5）マージ済み。
+- 2026-08-12: WebUI拡充（ランディング＋デモガイド・要件対応・API概要・変更履歴）とカスタムドメイン `mbag.mirai-dx-platform.com` 公開（Cloudflare Tunnel + systemd）。全クリックを実リンク化し疑似無反応を排除。
 
 ## 8. 完了サマリ（Re-assessment）
 

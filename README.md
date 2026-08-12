@@ -51,10 +51,13 @@ npm run build
 
 提示されたHTMLファイル（企画書・要件定義書・詳細仕様設計書・モックアップPart4）を、元の内容のまま配信するWebUIを用意しています。systemdサービスとして常時起動しています。
 
-- URL: http://192.168.0.185:8090/（ルートはモックアップPart4を表示）
-- 一覧（4文書のランチャー）: http://192.168.0.185:8090/index.html
-- 実体: [webui/mockup.html](./webui/mockup.html)（ビューア）＋ [webui/index.html](./webui/index.html)（ランチャー）＋ [scripts/webui-server.mjs](./scripts/webui-server.mjs)（Node製HTTPサーバー）
-- systemdユニット: [deploy/mirai-board-webui.service](./deploy/mirai-board-webui.service)（`sudo systemctl status mirai-board-webui` で確認）
+- 公開URL: **https://mbag.mirai-dx-platform.com/**（Cloudflare Tunnel経由・ルートはモックアップPart4を表示）
+- ローカルURL: http://192.168.0.185:8090/ ／ 一覧（ランチャー）: http://192.168.0.185:8090/index.html
+- 追加ページ: デモガイド / 要件対応表 / API概要 / 変更履歴（`/guide.html` `/requirements.html` `/api.html` `/history.html`）
+- 実体: [webui/](./webui)（ページ群）＋ [scripts/webui-server.mjs](./scripts/webui-server.mjs)（Node製HTTPサーバー）＋ [scripts/build-webui.mjs](./scripts/build-webui.mjs)（Pages/Worker配信バンドル生成）
+- systemdユニット: [deploy/mirai-board-webui.service](./deploy/mirai-board-webui.service)（WebUI本体）＋ [deploy/mbag-webui-tunnel.service](./deploy/mbag-webui-tunnel.service)（Cloudflare Tunnel、`sudo systemctl status mbag-webui-tunnel` で確認）
+
+> ドメインのDNS（CNAME: mbag → トンネルID.cfargotunnel.com）とトンネル設定はCloudflare側で管理しています（資格情報はリポジトリ外）。
 
 手動起動する場合:
 

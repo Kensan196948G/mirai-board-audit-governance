@@ -35,3 +35,11 @@ npm run seed
 動作確認中のPreview: https://mirai-board-audit-governance-preview.kensan1969.workers.dev
 
 デモアカウントはログイン画面の一覧から選択（すべて架空）。主要デモは「取締役 佐藤美咲」でログインし、議案一覧 → 子会社みらいエナジー株式譲渡契約（議決・決議確定・Manifest封緘）を一巡。監査は「内部監査 山田拓也 / 佐々木誠」で監査ワークベンチから指摘・是正・再検証を確認できます。
+
+## 5. WebUI（ドキュメント・モックアップ配信）
+
+- 公開URL: https://mbag.mirai-dx-platform.com/（ルートはモックアップPart4を表示）
+- 一覧: https://mbag.mirai-dx-platform.com/index.html
+- デモガイド: https://mbag.mirai-dx-platform.com/guide.html
+- 要件対応表: https://mbag.mirai-dx-platform.com/requirements.html
+- ローカル: http://192.168.0.185:8090/
