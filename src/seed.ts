@@ -16,6 +16,25 @@ export async function seedAll(db: Db): Promise<Record<string, number>> {
   const count: Record<string, number> = {};
   const at = nowIso();
 
+  // 冪等性: ユーザーが既に投入済みなら再投入せず、現状カウントのみ返す
+  const existingUsers = await db.first<{ cnt: number }>("SELECT COUNT(*) AS cnt FROM users");
+  if ((existingUsers?.cnt ?? 0) > 0) {
+    const tables = [
+      ["users", "users"],
+      ["bodies", "bodies"],
+      ["meetings", "meetings"],
+      ["agendaItems", "agenda_items"],
+      ["findings", "findings"],
+      ["auditEvents", "audit_events"],
+      ["manifests", "evidence_manifests"],
+    ] as const;
+    for (const [key, table] of tables) {
+      const row = await db.first<{ cnt: number }>(`SELECT COUNT(*) AS cnt FROM ${table}`);
+      count[key] = row?.cnt ?? 0;
+    }
+    return { alreadySeeded: 1, ...count };
+  }
+
   /* ---- ユーザー ---- */
   const users: Row[] = [
     { id: "user-director-1", name: "佐藤美咲", email: "sato.misaki@example.jp", role: "director", title: "代表取締役社長", department: "取締役会", outside: 0, body_ids: JSON.stringify(["body-board"]), active: 1, created_at: at },
