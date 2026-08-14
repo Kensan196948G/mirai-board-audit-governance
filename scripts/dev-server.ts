@@ -4,6 +4,7 @@ import { serve } from "@hono/node-server";
 import { buildApp } from "../src/app.ts";
 import { SqliteDb } from "../src/db/sqlite.ts";
 import { applyMigrations } from "../src/migrate.ts";
+import { seedAll } from "../src/seed.ts";
 
 const cwd = process.cwd();
 const vars = existsSync(join(cwd, ".dev.vars")) ? readFileSync(join(cwd, ".dev.vars"), "utf8") : "";
@@ -11,6 +12,8 @@ const getVar = (key: string, fallback = "") => vars.match(new RegExp(`^${key}=(.
 
 const db = new SqliteDb(join(cwd, ".wrangler/dev.sqlite"));
 await applyMigrations(db, join(cwd, "migrations"));
+// 冪等なデモデータ投入: 起動時に常時デモデータを保持する（再投入はスキップされる）
+await seedAll(db);
 const app = buildApp({
   db,
   sessionSecret: getVar("SESSION_SECRET", "local-dev-secret"),
