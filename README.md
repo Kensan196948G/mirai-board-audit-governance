@@ -96,7 +96,7 @@ flowchart LR
 | 用途 | アイコン | URL |
 |---|---|---|
 | **MVP実アプリ（操作可能）** | 🏛️ | **https://mbag-mvp.mirai-dx-platform.com/** ← まずはここ |
-| 文書・モックアップ（企画書・要件・設計・デモガイド） | 📚 | https://mbag.mirai-dx-platform.com/ |
+| 文書・モックアップ（企画書・要件・設計・デモガイド） | 📚 | https://mbag.mirai-dx-platform.com/（**左メニュー＋右コンテンツ**の2ペインで全文書を閲覧） |
 | モックアップ（拡張デモ画面） | 🖼️ | https://mbag.mirai-dx-platform.com/mockup.html |
 | デモ手順ガイド | 🧭 | https://mbag.mirai-dx-platform.com/guide.html |
 | 本番環境 | 🚫 | 未設定（本番運用化は今回の対象外） |

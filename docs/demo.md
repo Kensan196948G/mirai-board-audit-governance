@@ -40,7 +40,7 @@ npm run seed
 
 ## 5. WebUI（ドキュメント・モックアップ配信）
 
-- 公開URL: https://mbag.mirai-dx-platform.com/（ルートは説明・一覧ページを表示）
+- 公開URL: https://mbag.mirai-dx-platform.com/（**左メニュー＋右コンテンツの2ペイン表示**。企画書・モックアップ・API概要・GitHub・要件定義書・詳細仕様設計書・要件対応表・デモガイド・実装済みMVP・変更履歴を左メニューから切替）
 - **MVP実アプリ**: https://mbag-mvp.mirai-dx-platform.com/（取締役会・監査の操作可能なデモ）
 - モックアップ: https://mbag.mirai-dx-platform.com/mockup.html
 - デモガイド: https://mbag.mirai-dx-platform.com/guide.html
