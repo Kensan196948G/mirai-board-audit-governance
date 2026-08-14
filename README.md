@@ -43,9 +43,19 @@ npm run build
 
 ## Preview（Cloudflare Workers + D1）
 
-動作確認中のPreview: **https://mirai-board-audit-governance-preview.kensan1969.workers.dev**
+動作確認中のMVP/Prototype: **https://mirai-board-audit-governance-preview.kensan1969.workers.dev**
 
 デモアカウントはログイン画面の一覧から選択できます（すべて架空）。`npm run deploy:preview` で再デプロイできます。Preview URL とデモ手順は [docs/demo.md](./docs/demo.md) に記載します。
+
+### URL分離（本番 / MVP / 文書）
+
+| 用途 | URL | 内容 |
+|---|---|---|
+| MVP/Prototype（実アプリ） | https://mirai-board-audit-governance-preview.kensan1969.workers.dev | 操作可能なMVP（Workers + D1） |
+| 関係者レビュー（文書・モックアップ） | https://mbag.mirai-dx-platform.com/ | WebUI（企画書・要件・設計・モックアップ・デモガイド） |
+| 本番 | 未設定（本番運用化は今回の対象外） | 将来は `mirai-dx-platform.com` 配下の本番用サブドメインを別途作成予定 |
+
+> 注: MVP用サブドメイン（例: `mvp.mirai-dx-platform.com`）の新設は Cloudflare DNS・トンネル資格情報（リポジトリ外）が必要なためバックログ（B-13）としています。現状は workers.dev の Preview URL が MVP の確認先です。
 
 ## WebUI（HTML文書・モックアップ配信）
 
