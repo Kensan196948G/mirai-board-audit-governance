@@ -1,0 +1,20 @@
+# Cloudflare Tunnel ingress config（リポジトリ管理用コピー）
+# 実運用ファイル: ~/.cloudflared/mbag-webui-config.yml（ホスト側・資格情報はリポジトリ外）
+# 用途:
+#   - mbag.mirai-dx-platform.com  → 文書・モックアップWebUI（localhost:8090, webui-server.mjs）
+#   - mbag-mvp.mirai-dx-platform.com → MVP実アプリ（Workers Preview をトンネル経由で配信）
+#
+# 注意: Workers Preview は自ホスト名以外の Host ヘッダーを 403 で拒否するため、
+#       各 ingress ルールの originRequest.httpHostHeader で原本ホスト名を指定する。
+#       （このバージョンの cloudflared のキー名は httpHostHeader。hostHeader は無視される）
+tunnel: 23c0933f-d35c-4c38-98d1-544dfadb2707
+credentials-file: /home/kensan/.cloudflared/23c0933f-d35c-4c38-98d1-544dfadb2707.json
+
+ingress:
+  - hostname: mbag.mirai-dx-platform.com
+    service: http://localhost:8090
+  - hostname: mbag-mvp.mirai-dx-platform.com
+    service: https://mirai-board-audit-governance-preview.kensan1969.workers.dev
+    originRequest:
+      httpHostHeader: mirai-board-audit-governance-preview.kensan1969.workers.dev
+  - service: http_status:404

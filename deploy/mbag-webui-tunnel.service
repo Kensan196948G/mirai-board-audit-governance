@@ -1,5 +1,5 @@
 [Unit]
-Description=Cloudflare Tunnel for mbag.mirai-dx-platform.com (Mirai Board WebUI)
+Description=Cloudflare Tunnel for mbag.mirai-dx-platform.com (docs WebUI) and mbag-mvp.mirai-dx-platform.com (MVP app)
 Documentation=https://github.com/Kensan196948G/mirai-board-audit-governance
 After=network-online.target mirai-board-webui.service
 Wants=network-online.target

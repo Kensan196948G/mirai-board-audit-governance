@@ -67,6 +67,7 @@
 - 2026-08-12: WebUI拡充（ランディング＋デモガイド・要件対応・API概要・変更履歴）とカスタムドメイン `mbag.mirai-dx-platform.com` 公開（Cloudflare Tunnel + systemd）。全クリックを実リンク化し疑似無反応を排除。
 - 2026-08-12: モックアップ拡張（経営トップ=統制ダッシュボード／新規登録フォーム／CSV・Excelインポート／システム設定CRUD／AI活用＋AI設定）と名称変更、関連4ページを更新。
 - 2026-08-14: 再評価（第3回・自律継続ラウンド）。実コード・API・DB・画面・CI・Git/GitHub・ライセンスを精査し、P0/P1は検出されず。文書・整合性のP2/P3を修正（要件対応表のテスト参照を実ファイルへ、assessment.md を初期ベースラインとして明示、完了サマリのテスト件数を23件へ、package.json に license: UNLICENSED を明示）。ローカルE2Eスモーク26項目全パスを確認。
+- 2026-08-14: **MVP用ドメイン `mbag-mvp.mirai-dx-platform.com` を公開**（Cloudflare Tunnel + DNSルート作成、Workers Preview をトンネル経由で配信、`httpHostHeader` でHost検証を解決）。README を経営層・非エンジニア向けに全面改訂（アイコン＋Mermaidダイアグラム）。
 
 ## 8. 完了サマリ（Re-assessment）
 

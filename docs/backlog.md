@@ -14,9 +14,10 @@
 | B-10 | 実AI（LLM）草案・RAG | P3 | 出典到達性、人レビュー、誤回答ガード | 現状は規則ベースのデモ |
 | B-11 | 全FR-01〜15の完全実装（通知高度化・廃棄証明書等） | P3 | 詳細仕様の受入基準 | 垂直スライス以外の残り |
 | B-12 | UAT・教育・並行運用手順 | P3 | 限定導入判定 | 本番フェーズ |
-| B-13 | MVP用サブドメイン設定（例: mvp.mirai-dx-platform.com） | P3 | CNAME/トンネル設定後、Preview同等動作を確認 | Cloudflare DNS・トンネル資格情報（リポジトリ外）が必要。現状は workers.dev の Preview URL がMVP確認先 |
+| B-13 | ~~MVP用サブドメイン設定~~ | P3 | ✅ 実装済み（2026-08-14） | `mbag-mvp.mirai-dx-platform.com` をCloudflare Tunnelで公開（Workers Preview配信）。CNAME・トンネルingress・`httpHostHeader` 設定を適用し、SPA/ログイン/データの動作確認済み |
 
 ## 記録
 
 - 2026-08-12: 初版作成。MVP完了後に本ファイルへ追加・更新する。
 - 2026-08-14: B-01 に package.json の `"license": "UNLICENSED"` 明示を反映。B-13（MVP用サブドメイン）を追加。
+- 2026-08-14: B-13 を実装済みに更新（`mbag-mvp.mirai-dx-platform.com` 公開）。
