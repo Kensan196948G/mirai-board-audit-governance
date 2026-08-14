@@ -13,9 +13,10 @@
         --border: #e3e8ef;
         --muted: #667085;
         --blue: #175cd3;
-        --sidebar-bg: #16233b;
-        --sidebar-fg: #dbe4f0;
-        --sidebar-muted: #8fa1ba;
+        /* ライトモードのサイドバー */
+        --sidebar-bg: #ffffff;
+        --sidebar-fg: #1a2433;
+        --sidebar-muted: #667085;
         --sidebar-active: #e08a2b;
       }
       * { box-sizing: border-box; }
@@ -30,12 +31,13 @@
       a { text-decoration: none; }
       a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
-      /* ── 左メニュー（サイドバー） ─────────────────────── */
+      /* ── 左メニュー（サイドバー・ライトモード） ────────── */
       .sidebar {
         width: 250px;
         flex: 0 0 250px;
         background: var(--sidebar-bg);
         color: var(--sidebar-fg);
+        border-right: 1px solid var(--border);
         display: flex;
         flex-direction: column;
         height: 100vh;
@@ -47,7 +49,7 @@
         align-items: center;
         gap: 0.6rem;
         padding: 1rem 1rem 0.9rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        border-bottom: 1px solid var(--border);
       }
       .sidebar .brand .mark {
         width: 34px; height: 34px; border-radius: 9px;
@@ -55,7 +57,7 @@
         display: inline-flex; align-items: center; justify-content: center;
         font-size: 1.05rem; flex: 0 0 34px;
       }
-      .sidebar .brand .title { font-weight: 700; font-size: 0.88rem; line-height: 1.35; color: #fff; }
+      .sidebar .brand .title { font-weight: 700; font-size: 0.88rem; line-height: 1.35; color: #1a2433; }
       .sidebar .brand .sub { font-size: 0.68rem; color: var(--sidebar-muted); }
       .sidebar nav { flex: 1; overflow-y: auto; padding: 0.6rem 0.5rem; }
       .sidebar nav .menu-label {
@@ -67,13 +69,13 @@
         color: var(--sidebar-fg); font-size: 0.85rem;
         padding: 0.5rem 0.7rem; border-radius: 8px; margin: 1px 0;
       }
-      .sidebar nav a.item:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+      .sidebar nav a.item:hover { background: #f2f4f7; color: #1a2433; }
       .sidebar nav a.item.active { background: var(--sidebar-active); color: #fff; font-weight: 600; }
       .sidebar nav a.item .ico { width: 1.15rem; text-align: center; font-size: 0.95rem; }
       .sidebar nav a.item .ext { margin-left: auto; font-size: 0.62rem; color: var(--sidebar-muted); }
-      .sidebar nav a.item.active .ext { color: rgba(255, 255, 255, 0.85); }
+      .sidebar nav a.item.active .ext { color: rgba(255, 255, 255, 0.9); }
       .sidebar .s-foot {
-        padding: 0.7rem 1rem; border-top: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 0.7rem 1rem; border-top: 1px solid var(--border);
         font-size: 0.66rem; color: var(--sidebar-muted); line-height: 1.5;
       }
 
@@ -140,15 +142,15 @@
       // 左メニュー項目（表示順は指示どおり）
       const MENU = [
         { label: "企画書", icon: "🗂️", src: "./%E4%BC%81%E7%94%BB%E6%9B%B8.html" },
-        { label: "モックアップ", icon: "🖼️", src: "./mockup.html" },
-        { label: "API概要", icon: "🔌", src: "./api.html" },
-        { label: "GitHubリポジトリ", icon: "🔗", ext: "https://github.com/Kensan196948G/mirai-board-audit-governance" },
         { label: "要件定義書", icon: "📋", src: "./%E8%A6%81%E4%BB%B6%E5%AE%9A%E7%BE%A9%E6%9B%B8.html" },
         { label: "詳細仕様設計書", icon: "📐", src: "./%E8%A9%B3%E7%B4%B0%E4%BB%95%E6%A7%98%E8%A8%AD%E8%A8%88%E6%9B%B8.html" },
         { label: "要件対応表", icon: "✅", src: "./requirements.html" },
-        { label: "デモガイド", icon: "🧭", src: "./guide.html" },
-        { label: "実装済みMVPアプリ", icon: "🏗️", ext: "https://mbag-mvp.mirai-dx-platform.com/" },
+        { label: "API概要", icon: "🔌", src: "./api.html" },
         { label: "変更履歴", icon: "📝", src: "./history.html" },
+        { label: "モックアップ", icon: "🖼️", src: "./mockup.html" },
+        { label: "GitHubリポジトリ", icon: "🔗", ext: "https://github.com/Kensan196948G/mirai-board-audit-governance" },
+        { label: "実装済みMVPアプリ", icon: "🏗️", ext: "https://mbag-mvp.mirai-dx-platform.com/" },
+        { label: "デモガイド", icon: "🧭", src: "./guide.html" },
       ];
 
       const frame = document.getElementById("content");
