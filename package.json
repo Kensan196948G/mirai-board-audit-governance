@@ -2,6 +2,7 @@
   "name": "mirai-board-audit-governance",
   "version": "0.1.0",
   "private": true,
+  "license": "UNLICENSED",
   "type": "module",
   "description": "みらい取締役会・監査統合基盤 MVP（Cloudflare Workers + D1 + React/Vite）",
   "scripts": {
